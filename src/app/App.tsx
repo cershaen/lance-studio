@@ -19,63 +19,92 @@ export default function App() {
       document.head.appendChild(meta);
     }
 
+    let rafId: number;
+    let lastMouseUpdate = 0;
+    let lastScrollUpdate = 0;
+
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      const now = Date.now();
+      if (now - lastMouseUpdate < 50) return; // Throttle to ~20fps
+      lastMouseUpdate = now;
+      
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        setMousePosition({ x: e.clientX, y: e.clientY });
+      });
     };
 
     const handleScroll = () => {
-      setScrollY(window.scrollY);
+      const now = Date.now();
+      if (now - lastScrollUpdate < 50) return; // Throttle to ~20fps
+      lastScrollUpdate = now;
+      
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        setScrollY(window.scrollY);
+      });
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('scroll', handleScroll);
+      if (rafId) cancelAnimationFrame(rafId);
     };
   }, []);
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-[#0a0f1e]">
       {/* Animated gradient background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] animate-gradient-shift" />
+      <div className="fixed inset-0 bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a]" />
       
-      {/* Multiple floating gradient orbs */}
+      {/* All 4 floating gradient orbs with GPU acceleration */}
       <div 
-        className="fixed w-[800px] h-[800px] rounded-full bg-gradient-to-r from-emerald-500/30 to-green-500/30 blur-[120px] animate-float opacity-60"
+        className="fixed w-[800px] h-[800px] rounded-full bg-gradient-to-r from-emerald-500/20 to-green-500/20 blur-[120px] opacity-50 animate-gradient-shift"
         style={{
-          top: `${20 - scrollY * 0.1}%`,
+          top: `${20 - scrollY * 0.05}%`,
           left: '5%',
+          willChange: 'transform',
+          transform: 'translateZ(0)',
         }}
       />
       <div 
-        className="fixed w-[700px] h-[700px] rounded-full bg-gradient-to-r from-cyan-500/25 to-blue-500/25 blur-[120px] animate-float-delayed opacity-50"
+        className="fixed w-[700px] h-[700px] rounded-full bg-gradient-to-r from-blue-500/15 to-purple-500/15 blur-[100px] opacity-40 animate-gradient-shift-delayed"
         style={{
-          bottom: `${10 + scrollY * 0.05}%`,
+          bottom: `${10 + scrollY * 0.03}%`,
           right: '10%',
+          willChange: 'transform',
+          transform: 'translateZ(0)',
         }}
       />
       <div 
-        className="fixed w-[600px] h-[600px] rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-[120px] animate-float opacity-40"
+        className="fixed w-[600px] h-[600px] rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10 blur-[80px] opacity-30 animate-gradient-shift"
         style={{
-          top: `${50 + scrollY * 0.08}%`,
+          top: `${50 + scrollY * 0.02}%`,
           right: '15%',
+          willChange: 'transform',
+          transform: 'translateZ(0)',
         }}
       />
       <div 
-        className="fixed w-[500px] h-[500px] rounded-full bg-gradient-to-r from-amber-500/15 to-orange-500/15 blur-[100px] animate-float-delayed opacity-30"
+        className="fixed w-[500px] h-[500px] rounded-full bg-gradient-to-r from-cyan-500/12 to-blue-500/12 blur-[70px] opacity-35 animate-gradient-shift-delayed"
         style={{
-          bottom: `${30 - scrollY * 0.06}%`,
+          bottom: `${30 - scrollY * 0.04}%`,
           left: '20%',
+          willChange: 'transform',
+          transform: 'translateZ(0)',
         }}
       />
 
-      {/* Dynamic mouse follower glow */}
+      {/* Mouse follower - HIDDEN ON MOBILE */}
       <div 
-        className="fixed w-[400px] h-[400px] rounded-full bg-emerald-500/5 blur-[80px] pointer-events-none transition-all duration-500 ease-out"
+        className="hidden md:block fixed w-[400px] h-[400px] rounded-full bg-emerald-500/5 blur-[80px] pointer-events-none transition-all duration-300 ease-out"
         style={{
           left: mousePosition.x - 200,
           top: mousePosition.y - 200,
+          willChange: 'transform',
+          transform: 'translateZ(0)',
         }}
       />
 
@@ -216,7 +245,7 @@ export default function App() {
                     {/* Buttons */}
                     <div className="space-y-4" style={{ filter: 'blur(0px)' }}>
                       <a 
-                        href="https://forms.gle/tJpjRZpP7SF4vCR97"
+                        href="https://forms.gle/1AWyXvcyt9PuFSGKA"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="block w-full relative group/btn overflow-hidden rounded-2xl"
@@ -465,98 +494,102 @@ export default function App() {
         </footer>
       </div>
 
-      {/* Enhanced floating particles with geometric shapes */}
+      {/* Enhanced floating particles with geometric shapes - DOUBLED FOR MORE VISUAL RICHNESS */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        {/* Small floating circles */}
-        {[...Array(20)].map((_, i) => (
+        {/* Small floating circles - DOUBLED FROM 20 TO 40 */}
+        {[...Array(40)].map((_, i) => (
           <div
             key={`circle-${i}`}
-            className="absolute rounded-full animate-particle opacity-40"
+            className="absolute rounded-full animate-particle opacity-30"
             style={{
-              left: `${5 + i * 5}%`,
+              left: `${5 + (i * 2.5) % 95}%`,
               top: `${10 + (i * 7) % 80}%`,
               width: `${3 + (i % 4)}px`,
               height: `${3 + (i % 4)}px`,
-              background: i % 3 === 0 ? 'rgba(16, 185, 129, 0.4)' : i % 3 === 1 ? 'rgba(59, 130, 246, 0.4)' : 'rgba(168, 85, 247, 0.4)',
-              animationDelay: `${i * 0.3}s`,
+              background: i % 3 === 0 ? 'rgba(16, 185, 129, 0.3)' : i % 3 === 1 ? 'rgba(59, 130, 246, 0.3)' : 'rgba(168, 85, 247, 0.3)',
+              animationDelay: `${i * 0.2}s`,
               animationDuration: `${5 + (i % 5)}s`,
-              boxShadow: `0 0 ${8 + (i % 3) * 4}px ${i % 3 === 0 ? 'rgba(16, 185, 129, 0.5)' : i % 3 === 1 ? 'rgba(59, 130, 246, 0.5)' : 'rgba(168, 85, 247, 0.5)'}`,
+              willChange: 'transform',
+              transform: 'translateZ(0)',
             }}
           />
         ))}
         
-        {/* Geometric squares */}
-        {[...Array(8)].map((_, i) => (
+        {/* Geometric squares - DOUBLED FROM 8 TO 16 */}
+        {[...Array(16)].map((_, i) => (
           <div
             key={`square-${i}`}
-            className="absolute animate-float opacity-30"
+            className="absolute animate-float opacity-20"
             style={{
-              left: `${15 + i * 12}%`,
-              top: `${20 + (i * 9) % 70}%`,
-              width: `${8 + (i % 3) * 4}px`,
-              height: `${8 + (i % 3) * 4}px`,
-              border: `1px solid ${i % 2 === 0 ? 'rgba(16, 185, 129, 0.4)' : 'rgba(59, 130, 246, 0.4)'}`,
-              transform: `rotate(${i * 15}deg)`,
-              animationDelay: `${i * 0.6}s`,
-              animationDuration: `${8 + (i % 4)}s`,
-              boxShadow: `0 0 12px ${i % 2 === 0 ? 'rgba(16, 185, 129, 0.3)' : 'rgba(59, 130, 246, 0.3)'}`,
+              left: `${15 + (i * 5.5) % 85}%`,
+              top: `${20 + (i * 12) % 70}%`,
+              width: `${8 + (i % 4) * 2}px`,
+              height: `${8 + (i % 4) * 2}px`,
+              border: `1px solid ${i % 2 === 0 ? 'rgba(16, 185, 129, 0.3)' : 'rgba(59, 130, 246, 0.3)'}`,
+              transform: `rotate(${i * 15}deg) translateZ(0)`,
+              animationDelay: `${i * 0.3}s`,
+              animationDuration: `${8 + (i % 3)}s`,
+              willChange: 'transform',
             }}
           />
         ))}
         
-        {/* Triangular shapes */}
-        {[...Array(6)].map((_, i) => (
+        {/* Triangles - DOUBLED FROM 6 TO 12 */}
+        {[...Array(12)].map((_, i) => (
           <div
             key={`triangle-${i}`}
-            className="absolute animate-float-delayed opacity-25"
+            className="absolute animate-float opacity-15"
             style={{
-              left: `${10 + i * 15}%`,
-              top: `${25 + (i * 11) % 65}%`,
+              left: `${25 + (i * 7) % 70}%`,
+              top: `${15 + (i * 14) % 75}%`,
               width: 0,
               height: 0,
-              borderLeft: `${6 + i * 2}px solid transparent`,
-              borderRight: `${6 + i * 2}px solid transparent`,
-              borderBottom: `${10 + i * 3}px solid ${i % 2 === 0 ? 'rgba(168, 85, 247, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`,
-              animationDelay: `${i * 0.8}s`,
-              animationDuration: `${10 + (i % 3)}s`,
-              filter: `drop-shadow(0 0 8px ${i % 2 === 0 ? 'rgba(168, 85, 247, 0.4)' : 'rgba(16, 185, 129, 0.4)'})`,
+              borderLeft: `${6 + (i % 3) * 2}px solid transparent`,
+              borderRight: `${6 + (i % 3) * 2}px solid transparent`,
+              borderBottom: `${10 + (i % 3) * 3}px solid ${i % 2 === 0 ? 'rgba(168, 85, 247, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`,
+              transform: `rotate(${i * 30}deg) translateZ(0)`,
+              animationDelay: `${i * 0.45}s`,
+              animationDuration: `${10 + (i % 4)}s`,
+              willChange: 'transform',
             }}
           />
         ))}
         
-        {/* Hexagonal shapes */}
-        {[...Array(5)].map((_, i) => (
+        {/* Hexagons - DOUBLED FROM 5 TO 10 */}
+        {[...Array(10)].map((_, i) => (
           <div
-            key={`hex-${i}`}
-            className="absolute animate-particle opacity-20"
+            key={`hexagon-${i}`}
+            className="absolute animate-particle opacity-25"
             style={{
-              left: `${20 + i * 18}%`,
+              left: `${10 + (i * 9) % 80}%`,
               top: `${30 + (i * 13) % 60}%`,
-              width: `${12 + i * 3}px`,
-              height: `${12 + i * 3}px`,
-              background: i % 2 === 0 ? 'rgba(59, 130, 246, 0.2)' : 'rgba(16, 185, 129, 0.2)',
+              width: `${12 + (i % 3) * 2}px`,
+              height: `${14 + (i % 3) * 2}px`,
               clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-              animationDelay: `${i * 1}s`,
-              animationDuration: `${12 + (i % 4)}s`,
-              boxShadow: `0 0 16px ${i % 2 === 0 ? 'rgba(59, 130, 246, 0.4)' : 'rgba(16, 185, 129, 0.4)'}`,
+              background: i % 3 === 0 ? 'rgba(59, 130, 246, 0.25)' : i % 3 === 1 ? 'rgba(16, 185, 129, 0.25)' : 'rgba(168, 85, 247, 0.25)',
+              animationDelay: `${i * 0.6}s`,
+              animationDuration: `${7 + (i % 3)}s`,
+              willChange: 'transform',
+              transform: 'translateZ(0)',
             }}
           />
         ))}
         
-        {/* Plus symbols */}
-        {[...Array(7)].map((_, i) => (
+        {/* Plus symbols - DOUBLED FROM 7 TO 14 */}
+        {[...Array(14)].map((_, i) => (
           <div
             key={`plus-${i}`}
-            className="absolute animate-float opacity-35"
+            className="absolute animate-float opacity-25"
             style={{
-              left: `${8 + i * 14}%`,
-              top: `${12 + (i * 10) % 75}%`,
-              fontSize: `${16 + i * 4}px`,
-              color: i % 3 === 0 ? 'rgba(16, 185, 129, 0.5)' : i % 3 === 1 ? 'rgba(59, 130, 246, 0.5)' : 'rgba(168, 85, 247, 0.5)',
-              animationDelay: `${i * 0.5}s`,
+              left: `${12 + (i * 6.5) % 85}%`,
+              top: `${18 + (i * 6) % 80}%`,
+              fontSize: `${16 + (i % 4) * 4}px`,
+              color: i % 2 === 0 ? 'rgba(16, 185, 129, 0.4)' : 'rgba(59, 130, 246, 0.4)',
+              animationDelay: `${i * 0.35}s`,
               animationDuration: `${7 + (i % 3)}s`,
-              textShadow: `0 0 12px ${i % 3 === 0 ? 'rgba(16, 185, 129, 0.6)' : i % 3 === 1 ? 'rgba(59, 130, 246, 0.6)' : 'rgba(168, 85, 247, 0.6)'}`,
               fontWeight: '200',
+              willChange: 'transform',
+              transform: 'translateZ(0)',
             }}
           >
             +

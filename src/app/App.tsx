@@ -194,17 +194,17 @@ export default function App() {
                     </div>
 
                     {/* App Info */}
-                    <h4 className="text-3xl font-bold text-white mb-4 text-center">
+                    <h4 className="text-3xl font-bold text-white mb-4 text-center" style={{ filter: 'blur(0px)' }}>
                       Spool Tracker
                     </h4>
                     
-                    <p className="text-slate-200 mb-8 text-center leading-relaxed">
+                    <p className="text-slate-200 mb-8 text-center leading-relaxed" style={{ filter: 'blur(0px)' }}>
                       Manage your 3D printing filament inventory with precision. Track spool weight, usage, and materials—all in one beautiful app.
                     </p>
 
                     {/* Beta Badge */}
                     <div className="flex justify-center mb-8">
-                      <div className="relative inline-flex items-center gap-2 px-5 py-2 rounded-full bg-purple-500/20 border border-purple-400/40 backdrop-blur-md group-hover:bg-purple-500/30 transition-all duration-500 shadow-lg shadow-purple-500/20">
+                      <div className="relative inline-flex items-center gap-2 px-5 py-2 rounded-full bg-purple-500/20 border border-purple-400/40 backdrop-blur-md group-hover:bg-purple-500/30 transition-all duration-500 shadow-lg shadow-purple-500/20" style={{ filter: 'blur(0px)' }}>
                         <span className="relative flex h-2 w-2">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75" />
                           <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-400" />
@@ -214,9 +214,9 @@ export default function App() {
                     </div>
 
                     {/* Buttons */}
-                    <div className="space-y-4">
+                    <div className="space-y-4" style={{ filter: 'blur(0px)' }}>
                       <a 
-                        href="https://forms.gle/kHZZoGRqsYcyX4iG8"
+                        href="https://forms.gle/tJpjRZpP7SF4vCR97"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="block w-full relative group/btn overflow-hidden rounded-2xl"
@@ -390,54 +390,62 @@ export default function App() {
           </div>
         </section>
 
-        {/* Contact Section - Floating Text */}
-        <section className="py-24 px-5">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-block mb-6">
-              <span className="text-sm tracking-[0.3em] uppercase text-emerald-400/70">Get In Touch</span>
-              <div className="h-px w-full mt-2 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
-            </div>
-            
-            <h3 
-              className="text-4xl md:text-5xl font-bold text-white mb-6"
-              style={{
-                textShadow: '0 0 40px rgba(16, 185, 129, 0.2)',
-              }}
-            >
-              Let's Create Together
-            </h3>
-            
-            <p 
-              className="text-slate-200 mb-10 leading-relaxed text-lg max-w-xl mx-auto"
-              style={{
-                textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
-              }}
-            >
-              Have a project in mind? Questions about our products? We'd love to hear from you.
-            </p>
-            
-            <a 
-              href="mailto:hello@lance-studio.com"
-              className="inline-block relative group/link overflow-hidden rounded-2xl"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/30 to-cyan-500/30 blur-xl group-hover/link:blur-2xl transition-all duration-500" />
-              <div className="relative px-8 py-5 bg-gradient-to-r from-emerald-500/25 to-cyan-500/25 border border-emerald-400/40 backdrop-blur-md group-hover/link:from-emerald-500/35 group-hover/link:to-cyan-500/35 group-hover/link:border-emerald-400/60 transition-all duration-500 rounded-2xl shadow-lg">
-                <div className="flex items-center gap-3">
-                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  <span className="text-white font-medium">hello@lance-studio.com</span>
-                  <svg 
-                    className="w-5 h-5 text-white transform group-hover/link:translate-x-1 transition-transform duration-300" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
+        {/* Contact Email Card */}
+        <section className="pb-20 px-5">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex justify-center">
+              <div className="relative group w-full max-w-lg">
+                {/* Glow effect - reflects card colors above */}
+                <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/15 via-emerald-500/15 to-purple-500/15 rounded-full blur-[60px] opacity-0 group-hover:opacity-100 transition-all duration-1000" />
+                
+                <div 
+                  className="relative backdrop-blur-sm bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-white/[0.01] border border-white/[0.15] rounded-2xl px-6 py-4 shadow-2xl transform-gpu transition-all duration-700 group-hover:scale-[1.02] group-hover:border-white/[0.25]"
+                  style={{
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 40px rgba(255, 255, 255, 0.02)',
+                    filter: 'blur(0px)'
+                  }}
+                >
+                  {/* Light gradient overlays */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] via-transparent to-transparent rounded-2xl pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/[0.03] via-emerald-500/[0.05] to-purple-500/[0.03] rounded-2xl pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-tl from-emerald-500/[0.04] via-blue-500/[0.02] to-purple-500/[0.02] rounded-2xl pointer-events-none opacity-40 group-hover:opacity-80 transition-opacity duration-700" />
+                  
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
+                    <div className="absolute -inset-full bg-gradient-to-r from-transparent via-white/[0.08] to-transparent group-hover:animate-shimmer" style={{ transform: 'skewX(-20deg)' }} />
+                  </div>
+                  
+                  {/* Inner subtle orbs - reflect card colors */}
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500/8 rounded-full blur-[40px] group-hover:bg-blue-500/12 transition-all duration-700" />
+                  <div className="absolute bottom-0 left-0 w-20 h-20 bg-purple-500/8 rounded-full blur-[40px] group-hover:bg-purple-500/12 transition-all duration-700" />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-emerald-500/6 rounded-full blur-[40px] group-hover:bg-emerald-500/10 transition-all duration-700" />
+                  
+                  <div className="relative z-10 text-center">
+                    <a 
+                      href="mailto:hello@lance-studio.com"
+                      className="text-emerald-400 hover:text-emerald-300 no-underline transition-colors duration-300 inline-flex items-center gap-2 group/link"
+                      style={{ 
+                        fontSize: '1rem',
+                        filter: 'blur(0px)'
+                      }}
+                    >
+                      <svg className="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      <span className="tracking-wide">hello@lance-studio.com</span>
+                      <svg 
+                        className="w-3.5 h-3.5 opacity-70 transform group-hover/link:translate-x-1 transition-transform duration-300" 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </a>
+                  </div>
                 </div>
               </div>
-            </a>
+            </div>
           </div>
         </section>
 

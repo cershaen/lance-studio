@@ -5,6 +5,20 @@ export default function App() {
   const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
+    // Set page title
+    document.title = 'Lance Studio - Creative Digital Solutions';
+    
+    // Set meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Lance Studio creates innovative digital tools and tabletop gaming accessories. Discover Spool Tracker and our custom 3D printed terrain.');
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = 'description';
+      meta.content = 'Lance Studio creates innovative digital tools and tabletop gaming accessories. Discover Spool Tracker and our custom 3D printed terrain.';
+      document.head.appendChild(meta);
+    }
+
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
@@ -89,71 +103,27 @@ export default function App() {
       {/* Main content */}
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Hero Section - Floating Text */}
-        <section className="flex items-center justify-center px-5 py-20 md:py-28">
+        <section className="flex items-center justify-center px-5 py-20 md:py-28 pb-12">
           <div className="max-w-[800px] w-full text-center">
-            {/* Logo/Brand */}
-            <div className="mb-6 animate-fade-in">
-              <h1 className="tracking-[0.4em] uppercase text-slate-400 text-sm mb-4">
+            {/* Logo/Brand - ENLARGED */}
+            <div className="mb-10 animate-fade-in">
+              <h1 className="text-6xl md:text-7xl lg:text-8xl tracking-[0.3em] uppercase text-white font-bold mb-6"
+                style={{
+                  textShadow: '0 0 60px rgba(16, 185, 129, 0.4), 0 0 100px rgba(16, 185, 129, 0.2)',
+                }}
+              >
                 Lance Studio
               </h1>
-              <div className="h-px w-32 mx-auto bg-gradient-to-r from-transparent via-emerald-500/60 to-transparent" />
+              <div className="h-px w-48 mx-auto bg-gradient-to-r from-transparent via-emerald-500/80 to-transparent" />
             </div>
 
-            {/* Main heading */}
-            <h2 
-              className="text-6xl md:text-7xl lg:text-8xl font-bold mb-8 text-white tracking-tight animate-fade-in-up"
-              style={{
-                textShadow: '0 0 40px rgba(16, 185, 129, 0.3), 0 0 80px rgba(16, 185, 129, 0.1)',
-              }}
-            >
-              Strategy to Scale.
-            </h2>
-
             {/* Status badge */}
-            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-black/40 border border-white/[0.2] backdrop-blur-md mb-10 animate-fade-in-delayed shadow-lg shadow-black/50">
+            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-black/40 border border-white/[0.2] backdrop-blur-md mb-16 animate-fade-in-delayed shadow-lg shadow-black/50">
               <span className="relative flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 shadow-lg shadow-emerald-500/50" />
               </span>
               <span className="text-white text-sm tracking-wide font-medium">System Operational</span>
-            </div>
-
-            {/* Description */}
-            <div className="space-y-5 mb-12 animate-fade-in-delayed max-w-2xl mx-auto">
-              <p 
-                className="text-slate-200 leading-relaxed text-lg md:text-xl"
-                style={{
-                  textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
-                }}
-              >
-                We operate at the intersection of{' '}
-                <span className="text-emerald-400 font-semibold">digital logic</span> and{' '}
-                <span className="text-emerald-400 font-semibold">physical form</span>.
-              </p>
-              <p 
-                className="text-slate-300 leading-relaxed text-base md:text-lg"
-                style={{
-                  textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
-                }}
-              >
-                Lance Studio is a design and technology practice bridging the gap between code and craft.
-              </p>
-            </div>
-
-            {/* CTA - Scroll indicator */}
-            <div className="animate-fade-in-delayed-3">
-              <div className="inline-flex flex-col items-center gap-3 text-slate-400">
-                <span className="text-sm tracking-wider">Explore Our Products</span>
-                <div className="w-px h-12 bg-gradient-to-b from-emerald-500/50 to-transparent" />
-                <svg 
-                  className="w-5 h-5 animate-float-slow" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                </svg>
-              </div>
             </div>
           </div>
         </section>
@@ -202,14 +172,16 @@ export default function App() {
                   <div className="absolute bottom-5 left-5 w-28 h-28 bg-blue-500/15 rounded-full blur-[60px] group-hover:bg-blue-500/25 transition-all duration-700" />
                   
                   <div className="relative z-10">
-                    {/* App Logo with glow - SVG Icon */}
+                    {/* App Logo with glow */}
                     <div className="flex justify-center mb-8 transform group-hover:scale-105 transition-transform duration-700">
                       <div className="relative">
                         <div className="absolute inset-0 bg-gradient-to-br from-purple-500/30 to-blue-500/30 rounded-[2rem] blur-xl group-hover:blur-2xl transition-all duration-700" />
-                        <div className="relative w-36 h-36 rounded-[2rem] bg-gradient-to-br from-purple-500/25 via-blue-500/25 to-pink-500/25 border border-purple-400/40 flex items-center justify-center shadow-2xl shadow-purple-500/30 ring-1 ring-white/20 backdrop-blur-md group-hover:border-purple-400/60 transition-all duration-700">
-                          <svg className="w-20 h-20 text-purple-200 group-hover:text-purple-100 transition-colors duration-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                          </svg>
+                        <div className="relative w-36 h-36 rounded-[2rem] overflow-hidden shadow-2xl shadow-purple-500/30 ring-1 ring-white/20 backdrop-blur-sm">
+                          <img 
+                            src="/spool-tracker-logo.png" 
+                            alt="Spool Tracker Logo" 
+                            className="w-full h-full object-cover"
+                          />
                         </div>
                       </div>
                     </div>
@@ -471,22 +443,102 @@ export default function App() {
         </footer>
       </div>
 
-      {/* Enhanced floating particles */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        {[...Array(12)].map((_, i) => (
+      {/* Enhanced floating particles with geometric shapes */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        {/* Small floating circles */}
+        {[...Array(20)].map((_, i) => (
           <div
-            key={i}
-            className="absolute rounded-full animate-particle"
+            key={`circle-${i}`}
+            className="absolute rounded-full animate-particle opacity-40"
             style={{
-              left: `${10 + i * 8}%`,
-              top: `${15 + i * 6}%`,
-              width: `${2 + (i % 3)}px`,
-              height: `${2 + (i % 3)}px`,
-              background: i % 3 === 0 ? 'rgba(16, 185, 129, 0.3)' : i % 3 === 1 ? 'rgba(59, 130, 246, 0.3)' : 'rgba(168, 85, 247, 0.3)',
-              animationDelay: `${i * 0.4}s`,
-              animationDuration: `${4 + (i % 4)}s`,
+              left: `${5 + i * 5}%`,
+              top: `${10 + (i * 7) % 80}%`,
+              width: `${3 + (i % 4)}px`,
+              height: `${3 + (i % 4)}px`,
+              background: i % 3 === 0 ? 'rgba(16, 185, 129, 0.4)' : i % 3 === 1 ? 'rgba(59, 130, 246, 0.4)' : 'rgba(168, 85, 247, 0.4)',
+              animationDelay: `${i * 0.3}s`,
+              animationDuration: `${5 + (i % 5)}s`,
+              boxShadow: `0 0 ${8 + (i % 3) * 4}px ${i % 3 === 0 ? 'rgba(16, 185, 129, 0.5)' : i % 3 === 1 ? 'rgba(59, 130, 246, 0.5)' : 'rgba(168, 85, 247, 0.5)'}`,
             }}
           />
+        ))}
+        
+        {/* Geometric squares */}
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={`square-${i}`}
+            className="absolute animate-float opacity-30"
+            style={{
+              left: `${15 + i * 12}%`,
+              top: `${20 + (i * 9) % 70}%`,
+              width: `${8 + (i % 3) * 4}px`,
+              height: `${8 + (i % 3) * 4}px`,
+              border: `1px solid ${i % 2 === 0 ? 'rgba(16, 185, 129, 0.4)' : 'rgba(59, 130, 246, 0.4)'}`,
+              transform: `rotate(${i * 15}deg)`,
+              animationDelay: `${i * 0.6}s`,
+              animationDuration: `${8 + (i % 4)}s`,
+              boxShadow: `0 0 12px ${i % 2 === 0 ? 'rgba(16, 185, 129, 0.3)' : 'rgba(59, 130, 246, 0.3)'}`,
+            }}
+          />
+        ))}
+        
+        {/* Triangular shapes */}
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={`triangle-${i}`}
+            className="absolute animate-float-delayed opacity-25"
+            style={{
+              left: `${10 + i * 15}%`,
+              top: `${25 + (i * 11) % 65}%`,
+              width: 0,
+              height: 0,
+              borderLeft: `${6 + i * 2}px solid transparent`,
+              borderRight: `${6 + i * 2}px solid transparent`,
+              borderBottom: `${10 + i * 3}px solid ${i % 2 === 0 ? 'rgba(168, 85, 247, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`,
+              animationDelay: `${i * 0.8}s`,
+              animationDuration: `${10 + (i % 3)}s`,
+              filter: `drop-shadow(0 0 8px ${i % 2 === 0 ? 'rgba(168, 85, 247, 0.4)' : 'rgba(16, 185, 129, 0.4)'})`,
+            }}
+          />
+        ))}
+        
+        {/* Hexagonal shapes */}
+        {[...Array(5)].map((_, i) => (
+          <div
+            key={`hex-${i}`}
+            className="absolute animate-particle opacity-20"
+            style={{
+              left: `${20 + i * 18}%`,
+              top: `${30 + (i * 13) % 60}%`,
+              width: `${12 + i * 3}px`,
+              height: `${12 + i * 3}px`,
+              background: i % 2 === 0 ? 'rgba(59, 130, 246, 0.2)' : 'rgba(16, 185, 129, 0.2)',
+              clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+              animationDelay: `${i * 1}s`,
+              animationDuration: `${12 + (i % 4)}s`,
+              boxShadow: `0 0 16px ${i % 2 === 0 ? 'rgba(59, 130, 246, 0.4)' : 'rgba(16, 185, 129, 0.4)'}`,
+            }}
+          />
+        ))}
+        
+        {/* Plus symbols */}
+        {[...Array(7)].map((_, i) => (
+          <div
+            key={`plus-${i}`}
+            className="absolute animate-float opacity-35"
+            style={{
+              left: `${8 + i * 14}%`,
+              top: `${12 + (i * 10) % 75}%`,
+              fontSize: `${16 + i * 4}px`,
+              color: i % 3 === 0 ? 'rgba(16, 185, 129, 0.5)' : i % 3 === 1 ? 'rgba(59, 130, 246, 0.5)' : 'rgba(168, 85, 247, 0.5)',
+              animationDelay: `${i * 0.5}s`,
+              animationDuration: `${7 + (i % 3)}s`,
+              textShadow: `0 0 12px ${i % 3 === 0 ? 'rgba(16, 185, 129, 0.6)' : i % 3 === 1 ? 'rgba(59, 130, 246, 0.6)' : 'rgba(168, 85, 247, 0.6)'}`,
+              fontWeight: '200',
+            }}
+          >
+            +
+          </div>
         ))}
       </div>
     </div>

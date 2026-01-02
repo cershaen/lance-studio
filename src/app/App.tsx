@@ -72,7 +72,7 @@ export default function App() {
 
       {/* Dynamic mouse follower glow */}
       <div 
-        className="fixed w-[400px] h-[400px] rounded-full bg-emerald-500/10 blur-[100px] pointer-events-none transition-all duration-500 ease-out"
+        className="fixed w-[400px] h-[400px] rounded-full bg-emerald-500/5 blur-[80px] pointer-events-none transition-all duration-500 ease-out"
         style={{
           left: mousePosition.x - 200,
           top: mousePosition.y - 200,
@@ -103,7 +103,7 @@ export default function App() {
       {/* Main content */}
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Hero Section - Floating Text */}
-        <section className="flex items-center justify-center px-5 py-20 md:py-28 pb-12">
+        <section className="flex items-center justify-center px-5 py-20 md:py-28 pb-6">
           <div className="max-w-[800px] w-full text-center">
             {/* Logo/Brand - ENLARGED */}
             <div className="mb-10 animate-fade-in">
@@ -118,7 +118,7 @@ export default function App() {
             </div>
 
             {/* Status badge */}
-            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-black/40 border border-white/[0.2] backdrop-blur-md mb-16 animate-fade-in-delayed shadow-lg shadow-black/50">
+            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-black/40 border border-white/[0.2] backdrop-blur-md mb-8 animate-fade-in-delayed shadow-lg shadow-black/50">
               <span className="relative flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 shadow-lg shadow-emerald-500/50" />
@@ -129,7 +129,7 @@ export default function App() {
         </section>
 
         {/* Products Section */}
-        <section className="py-12 px-5">
+        <section className="pt-6 pb-12 px-5">
           <div className="max-w-7xl mx-auto">
             {/* Section Header */}
             <div className="text-center mb-16">
@@ -155,21 +155,28 @@ export default function App() {
               {/* Spool Tracker Card */}
               <div className="relative group perspective-1000">
                 {/* Glow effect */}
-                <div className="absolute -inset-10 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-full blur-[80px] opacity-0 group-hover:opacity-100 transition-all duration-1000" />
+                <div className="absolute -inset-10 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-full blur-[100px] opacity-0 group-hover:opacity-100 transition-all duration-1000" />
                 
                 <div 
-                  className="relative backdrop-blur-xl bg-gradient-to-br from-white/[0.06] via-white/[0.03] to-white/[0.01] border border-white/[0.15] rounded-[2.5rem] p-10 shadow-2xl transform-gpu transition-all duration-700 group-hover:scale-[1.03] group-hover:border-white/[0.25] h-full"
+                  className="relative backdrop-blur-sm bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-white/[0.01] border border-white/[0.15] rounded-[2.5rem] p-10 shadow-2xl transform-gpu transition-all duration-700 group-hover:scale-[1.03] group-hover:border-white/[0.25] h-full"
                   style={{
-                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 40px rgba(255, 255, 255, 0.03)',
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 40px rgba(255, 255, 255, 0.02), inset 0 -20px 40px rgba(139, 92, 246, 0.03)',
                   }}
                 >
-                  {/* Gradient overlays */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] via-transparent to-transparent rounded-[2.5rem] pointer-events-none" />
-                  <div className="absolute inset-0 bg-gradient-to-tl from-purple-500/[0.08] via-transparent to-blue-500/[0.05] rounded-[2.5rem] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  {/* Enhanced gradient overlays */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] via-transparent to-transparent rounded-[2.5rem] pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-tl from-purple-500/[0.06] via-blue-500/[0.03] to-transparent rounded-[2.5rem] pointer-events-none opacity-40 group-hover:opacity-70 transition-opacity duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-pink-500/[0.02] to-transparent rounded-[2.5rem] pointer-events-none opacity-30 group-hover:opacity-50 transition-opacity duration-700" />
                   
-                  {/* Inner glowing orbs */}
-                  <div className="absolute top-5 right-5 w-32 h-32 bg-purple-500/15 rounded-full blur-[60px] group-hover:bg-purple-500/25 transition-all duration-700" />
-                  <div className="absolute bottom-5 left-5 w-28 h-28 bg-blue-500/15 rounded-full blur-[60px] group-hover:bg-blue-500/25 transition-all duration-700" />
+                  {/* Animated shimmer effect */}
+                  <div className="absolute inset-0 rounded-[2.5rem] overflow-hidden pointer-events-none">
+                    <div className="absolute -inset-full bg-gradient-to-r from-transparent via-white/[0.08] to-transparent group-hover:animate-shimmer" style={{ transform: 'skewX(-20deg)' }} />
+                  </div>
+                  
+                  {/* Inner glowing orbs - REDUCED */}
+                  <div className="absolute top-5 right-5 w-40 h-40 bg-purple-500/10 rounded-full blur-[70px] group-hover:bg-purple-500/15 transition-all duration-700" />
+                  <div className="absolute bottom-5 left-5 w-36 h-36 bg-blue-500/10 rounded-full blur-[70px] group-hover:bg-blue-500/15 transition-all duration-700" />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-pink-500/8 rounded-full blur-[60px] group-hover:bg-pink-500/12 transition-all duration-700" />
                   
                   <div className="relative z-10">
                     {/* App Logo with glow */}
@@ -249,21 +256,28 @@ export default function App() {
               {/* Tabletop Gaming Store Card */}
               <div className="relative group perspective-1000">
                 {/* Glow effect */}
-                <div className="absolute -inset-10 bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-green-500/20 rounded-full blur-[80px] opacity-0 group-hover:opacity-100 transition-all duration-1000" />
+                <div className="absolute -inset-10 bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-green-500/20 rounded-full blur-[100px] opacity-0 group-hover:opacity-100 transition-all duration-1000" />
                 
                 <div 
-                  className="relative backdrop-blur-xl bg-gradient-to-br from-white/[0.06] via-white/[0.03] to-white/[0.01] border border-white/[0.15] rounded-[2.5rem] p-10 shadow-2xl transform-gpu transition-all duration-700 group-hover:scale-[1.03] group-hover:border-white/[0.25] h-full overflow-hidden"
+                  className="relative backdrop-blur-sm bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-white/[0.01] border border-white/[0.15] rounded-[2.5rem] p-10 shadow-2xl transform-gpu transition-all duration-700 group-hover:scale-[1.03] group-hover:border-white/[0.25] h-full overflow-hidden"
                   style={{
-                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 40px rgba(255, 255, 255, 0.03)',
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 40px rgba(255, 255, 255, 0.02), inset 0 -20px 40px rgba(139, 92, 246, 0.03)',
                   }}
                 >
-                  {/* Gradient overlays */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] via-transparent to-transparent rounded-[2.5rem] pointer-events-none" />
-                  <div className="absolute inset-0 bg-gradient-to-tl from-green-500/[0.08] via-transparent to-emerald-500/[0.05] rounded-[2.5rem] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  {/* Enhanced gradient overlays */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] via-transparent to-transparent rounded-[2.5rem] pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-tl from-green-500/[0.06] via-teal-500/[0.03] to-transparent rounded-[2.5rem] pointer-events-none opacity-40 group-hover:opacity-70 transition-opacity duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-emerald-500/[0.02] to-transparent rounded-[2.5rem] pointer-events-none opacity-30 group-hover:opacity-50 transition-opacity duration-700" />
                   
-                  {/* Inner glowing orbs */}
-                  <div className="absolute top-5 right-5 w-32 h-32 bg-emerald-500/15 rounded-full blur-[60px] group-hover:bg-emerald-500/25 transition-all duration-700" />
-                  <div className="absolute bottom-5 left-5 w-28 h-28 bg-teal-500/15 rounded-full blur-[60px] group-hover:bg-teal-500/25 transition-all duration-700" />
+                  {/* Animated shimmer effect */}
+                  <div className="absolute inset-0 rounded-[2.5rem] overflow-hidden pointer-events-none">
+                    <div className="absolute -inset-full bg-gradient-to-r from-transparent via-white/[0.08] to-transparent group-hover:animate-shimmer" style={{ transform: 'skewX(-20deg)' }} />
+                  </div>
+                  
+                  {/* Inner glowing orbs - REDUCED */}
+                  <div className="absolute top-5 right-5 w-40 h-40 bg-emerald-500/10 rounded-full blur-[70px] group-hover:bg-emerald-500/15 transition-all duration-700" />
+                  <div className="absolute bottom-5 left-5 w-36 h-36 bg-teal-500/10 rounded-full blur-[70px] group-hover:bg-teal-500/15 transition-all duration-700" />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-green-500/8 rounded-full blur-[60px] group-hover:bg-green-500/12 transition-all duration-700" />
                   
                   {/* Decorative floating shapes */}
                   <div className="absolute top-20 left-10 w-16 h-16 border-2 border-emerald-400/20 rounded-lg rotate-12 group-hover:rotate-45 transition-transform duration-1000" />

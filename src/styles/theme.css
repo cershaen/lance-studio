@@ -312,6 +312,19 @@
     animation: particle 5s ease-in-out infinite;
   }
 
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%) skewX(-20deg);
+    }
+    100% {
+      transform: translateX(200%) skewX(-20deg);
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 3s ease-in-out;
+  }
+
   .perspective-1000 {
     perspective: 1000px;
   }

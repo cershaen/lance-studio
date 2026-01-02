@@ -216,7 +216,7 @@ export default function App() {
                     {/* Buttons */}
                     <div className="space-y-4">
                       <a 
-                        href="https://testflight.apple.com/join/your-beta-link"
+                        href="https://forms.gle/kHZZoGRqsYcyX4iG8"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="block w-full relative group/btn overflow-hidden rounded-2xl"
@@ -224,12 +224,12 @@ export default function App() {
                         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-purple-500/30 blur-xl group-hover/btn:blur-2xl transition-all duration-500" />
                         <div className="relative px-6 py-5 bg-gradient-to-r from-blue-500/25 to-purple-500/25 border border-blue-400/40 backdrop-blur-md group-hover/btn:from-blue-500/35 group-hover/btn:to-purple-500/35 group-hover/btn:border-blue-400/60 transition-all duration-500 rounded-2xl shadow-lg">
                           <div className="flex items-center justify-center gap-3">
-                            <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                            <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                             <div className="text-left flex-1">
-                              <div className="text-xs text-slate-300">Join Beta on</div>
-                              <div className="font-semibold text-white">TestFlight</div>
+                              <div className="text-xs text-slate-300">Request Beta Access</div>
+                              <div className="font-semibold text-white">Sign Up Form</div>
                             </div>
                             <svg 
                               className="w-5 h-5 text-white transform group-hover/btn:translate-x-1 transition-transform duration-300" 
@@ -245,7 +245,7 @@ export default function App() {
 
                       <div className="text-center text-slate-400 text-sm py-2">
                         <span className="px-4 py-1 rounded-full bg-black/30 border border-white/[0.1] backdrop-blur-sm">
-                          Coming soon to the App Store
+                          Limited beta spots available
                         </span>
                       </div>
                     </div>

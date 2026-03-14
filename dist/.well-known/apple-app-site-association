@@ -1,0 +1,18 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [ "9Z938P5XM2.LM.Filament-Tracker-v1" ],
+        "components": [
+          {
+            "/": "/t/*",
+            "comment": "Matches any SpoolTag UUID link"
+          }
+        ]
+      }
+    ]
+  },
+  "appclips": {
+    "apps": [ "9Z938P5XM2.LM.Filament-Tracker-v1.Clip" ]
+  }
+}

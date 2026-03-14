@@ -1,66 +1,79 @@
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useScroll, useTransform, useSpring, useInView } from 'motion/react';
+import { motion, useScroll, useTransform, useSpring } from 'motion/react';
 
 /* ------------------------------------------------------------------ */
-/*  Design tokens — Spool's own identity (from SPOOL_DESIGN_SYSTEM)   */
+/*  Spool design system tokens (from SPOOL_DESIGN_SYSTEM.md)           */
 /* ------------------------------------------------------------------ */
-const COLORS = {
-  bg: '#0d0d0d',
-  bgBlue: 'rgba(13, 13, 18, 1)',
-  accent: '#007AFF',       // iOS system blue
-  accentLight: '#3395FF',
-  surface: 'rgba(255,255,255,0.03)',
-  surfaceHover: 'rgba(255,255,255,0.05)',
-  border: 'rgba(255,255,255,0.08)',
-  borderHover: 'rgba(255,255,255,0.15)',
-  textPrimary: '#ffffff',
-  textSecondary: 'rgba(255,255,255,0.55)',
-  textTertiary: 'rgba(255,255,255,0.35)',
+
+// Backgrounds
+const BG_PRIMARY = 'rgb(13, 13, 13)';
+const BG_CARD = 'rgb(38, 38, 43)';
+
+// Accent — iOS system blue, the ONLY brand colour
+const ACCENT = '#007AFF';
+
+// Text
+const TEXT_PRIMARY = '#ffffff';
+const TEXT_SECONDARY = 'rgba(235, 235, 245, 0.6)';  // iOS secondaryLabel
+const TEXT_TERTIARY = 'rgba(235, 235, 245, 0.3)';   // iOS tertiaryLabel
+
+// Material palette
+const MAT: Record<string, string> = {
+  PLA:  '#34C759', // iOS green
+  PETG: '#FF9500', // iOS orange
+  ABS:  '#007AFF', // iOS blue
+  TPU:  '#AF52DE', // iOS purple
+  'PLA+': '#34C759',
+  Nylon: '#8E8E93',
+  ASA:  '#FF3B30', // iOS red
 };
 
-const SPRING = [0.22, 1, 0.36, 1] as const;
+// Corner radius (design system)
+const RADIUS_MD = 16;
+const RADIUS_LG = 20;
+const RADIUS_XL = 24;
+
+// App Store
+const APP_STORE = 'https://apps.apple.com/gb/app/spool/id6756892049';
 
 /* ------------------------------------------------------------------ */
-/*  App Store link                                                     */
+/*  Apple logo                                                         */
 /* ------------------------------------------------------------------ */
-const APP_STORE_URL = 'https://apps.apple.com/gb/app/spool/id6756892049';
-
-/* ------------------------------------------------------------------ */
-/*  Apple logo SVG                                                     */
-/* ------------------------------------------------------------------ */
-function AppleLogo({ className = 'w-6 h-6' }: { className?: string }) {
+function AppleLogo({ size = 20 }: { size?: number }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
       <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
     </svg>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/*  Scroll-reveal wrapper (staggered entry from design system)         */
+/*  ScrollReveal — content fades/slides IN and STAYS. Never disappears */
 /* ------------------------------------------------------------------ */
-function Reveal({
+function ScrollReveal({
   children,
-  className = '',
   delay = 0,
-  y = 40,
+  className = '',
 }: {
   children: React.ReactNode;
-  className?: string;
   delay?: number;
-  y?: number;
+  className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: '-100px' });
 
   return (
     <motion.div
       ref={ref}
       className={className}
-      initial={{ opacity: 0, y, scale: 0.97 }}
-      animate={isInView ? { opacity: 1, y: 0, scale: 1 } : undefined}
-      transition={{ duration: 0.8, ease: SPRING, delay }}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{
+        duration: 0.7,
+        delay,
+        ease: [0.22, 1, 0.36, 1],
+      }}
     >
       {children}
     </motion.div>
@@ -68,803 +81,700 @@ function Reveal({
 }
 
 /* ------------------------------------------------------------------ */
-/*  Glass card component                                               */
-/* ------------------------------------------------------------------ */
-function GlassCard({
-  children,
-  className = '',
-  hover = true,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  hover?: boolean;
-}) {
-  return (
-    <div className={`group relative ${className}`}>
-      {hover && (
-        <div className="absolute -inset-px rounded-[21px] bg-gradient-to-b from-white/[0.12] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-      )}
-      <div
-        className={`relative backdrop-blur-xl rounded-[20px] p-6 border transition-all duration-500 ${
-          hover
-            ? 'bg-white/[0.03] border-white/[0.08] group-hover:bg-white/[0.05] group-hover:border-white/[0.15]'
-            : 'bg-white/[0.03] border-white/[0.08]'
-        }`}
-        style={{ boxShadow: '0 4px 8px rgba(0,0,0,0.08)' }}
-      >
-        {children}
-      </div>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Feature section — full-viewport sticky scroll reveal               */
-/* ------------------------------------------------------------------ */
-function FeatureSection({
-  label,
-  title,
-  titleAccent,
-  description,
-  children,
-  accentColor = COLORS.accent,
-  reverse = false,
-}: {
-  label: string;
-  title: string;
-  titleAccent: string;
-  description: string;
-  children: React.ReactNode;
-  accentColor?: string;
-  reverse?: boolean;
-}) {
-  return (
-    <section className="relative py-32 md:py-40 px-6">
-      <div className="max-w-6xl mx-auto">
-        <Reveal>
-          <span
-            className="text-xs font-semibold tracking-[0.3em] uppercase block mb-5"
-            style={{ color: accentColor, opacity: 0.7 }}
-          >
-            {label}
-          </span>
-        </Reveal>
-
-        <div
-          className={`grid lg:grid-cols-2 gap-16 lg:gap-20 items-center ${
-            reverse ? 'direction-rtl' : ''
-          }`}
-          style={{ direction: reverse ? 'rtl' : 'ltr' }}
-        >
-          <div style={{ direction: 'ltr' }}>
-            <Reveal>
-              <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-white leading-[1.1] tracking-tight mb-6">
-                {title}
-                <br />
-                <span style={{ color: COLORS.textTertiary }}>{titleAccent}</span>
-              </h2>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p className="text-lg leading-relaxed mb-8" style={{ color: COLORS.textSecondary }}>
-                {description}
-              </p>
-            </Reveal>
-          </div>
-
-          <div style={{ direction: 'ltr' }}>
-            <Reveal delay={0.15}>{children}</Reveal>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
 /*  Data                                                               */
 /* ------------------------------------------------------------------ */
 const DATABASE_ENTRIES = [
-  { colour: '#10b981', name: 'Matte PLA',     brand: 'Bambu Lab',  material: 'PLA',  weight: '1000g' },
-  { colour: '#ef4444', name: 'Galaxy Red',    brand: 'Prusament',  material: 'PETG', weight: '750g' },
-  { colour: '#3b82f6', name: 'Ocean Blue',    brand: 'Polymaker',  material: 'PLA+', weight: '1000g' },
-  { colour: '#f59e0b', name: 'Solar Yellow',  brand: 'eSUN',       material: 'ABS',  weight: '500g' },
-  { colour: '#8b5cf6', name: 'Cosmic Purple', brand: 'Hatchbox',   material: 'TPU',  weight: '800g' },
+  { colour: '#34C759', name: 'Matte PLA',     brand: 'Bambu Lab',  material: 'PLA',  weight: '1000g' },
+  { colour: '#FF3B30', name: 'Galaxy Red',    brand: 'Prusament',  material: 'PETG', weight: '750g'  },
+  { colour: '#007AFF', name: 'Ocean Blue',    brand: 'Polymaker',  material: 'PLA+', weight: '1000g' },
+  { colour: '#FF9500', name: 'Solar Yellow',  brand: 'eSUN',       material: 'ABS',  weight: '500g'  },
+  { colour: '#AF52DE', name: 'Cosmic Purple', brand: 'Hatchbox',   material: 'TPU',  weight: '800g'  },
 ];
-
-const MATERIAL_COLORS: Record<string, string> = {
-  PLA: '#22c55e',
-  PETG: '#f97316',
-  ABS: '#3b82f6',
-  TPU: '#a855f7',
-  'PLA+': '#22c55e',
-};
-
-const BAMBU_PRINTERS = ['X1 Carbon', 'P1S', 'A1', 'A1 Mini'];
 
 const FEATURES = [
   {
     title: 'Printer Management',
-    desc: 'Track maintenance, monitor print hours, set service reminders.',
-    icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z" />
-      </svg>
-    ),
+    desc: 'Track all your 3D printers. Log maintenance, monitor print hours, set service reminders.',
   },
   {
     title: 'SpoolTag',
-    desc: 'Print QR labels or write NFC tags. Scan to see everything.',
-    icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75zM16.5 16.5h.75v.75h-.75v-.75z" />
-      </svg>
-    ),
+    desc: 'Print QR labels or write NFC tags. Scan with your phone to see every detail instantly.',
   },
   {
     title: 'iCloud Sync',
-    desc: 'Seamless sync across iPhone and iPad. No accounts. Apple-native.',
-    icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15a4.5 4.5 0 004.5 4.5H18a3.75 3.75 0 001.332-7.257 3 3 0 00-3.758-3.848 5.25 5.25 0 00-10.233 2.33A4.502 4.502 0 002.25 15z" />
-      </svg>
-    ),
+    desc: 'Seamless sync across iPhone and iPad. No accounts, no sign-ups. Apple-native privacy.',
   },
   {
     title: 'Smart Inventory',
-    desc: 'Low stock alerts, colour search, filtering, storage tracking.',
-    icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-      </svg>
-    ),
+    desc: 'Low stock alerts, colour search, material filtering, storage tracking. Find any spool in seconds.',
   },
   {
     title: 'Cost & Energy',
-    desc: 'True cost of printing. Electricity from wattage and duration.',
-    icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
-      </svg>
-    ),
+    desc: 'True printing costs. Electricity calculated from wattage and duration. Price-per-gram breakdowns.',
   },
   {
     title: 'Print History',
-    desc: 'Full logging. Automatic for Bambu. Quick entry for everyone else.',
-    icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
+    desc: 'Full logging — spool, weight, duration, notes. Automatic for Bambu. Quick entry for everyone else.',
   },
 ];
+
+const BAMBU_PRINTERS = ['X1 Carbon', 'P1S', 'A1', 'A1 Mini'];
 
 /* ------------------------------------------------------------------ */
 /*  Main page                                                          */
 /* ------------------------------------------------------------------ */
 export default function SpoolPage() {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Global scroll progress for nav progress bar
-  const { scrollYProgress } = useScroll();
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 40, damping: 20 });
-  const progressWidth = useTransform(smoothProgress, [0, 1], ['0%', '100%']);
-
-  // Hero parallax
   const heroRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress: heroProgress } = useScroll({
+  const { scrollYProgress: heroScroll } = useScroll({
     target: heroRef,
     offset: ['start start', 'end start'],
   });
-  const heroScale = useTransform(heroProgress, [0, 1], [1, 0.9]);
-  const heroOpacity = useTransform(heroProgress, [0, 0.8], [1, 0]);
-  const heroBlur = useTransform(heroProgress, [0, 1], [0, 10]);
+  const heroOpacity = useTransform(heroScroll, [0, 0.6], [1, 0]);
+  const heroY = useTransform(heroScroll, [0, 0.6], [0, -80]);
+
+  // Progress bar
+  const { scrollYProgress } = useScroll();
+  const progress = useSpring(scrollYProgress, { stiffness: 40, damping: 20 });
+  const progressWidth = useTransform(progress, [0, 1], ['0%', '100%']);
 
   useEffect(() => {
     document.title = 'Spool — Track Every Gram';
   }, []);
 
   return (
-    <div ref={containerRef} className="relative w-full min-h-screen" style={{ background: COLORS.bg }}>
-      {/* ============================================================ */}
-      {/*  SPOOL BACKGROUND — own identity, blue/purple ambient glow   */}
-      {/* ============================================================ */}
-      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-        {/* Base gradient */}
-        <div
-          className="absolute inset-0"
-          style={{ background: `linear-gradient(145deg, ${COLORS.bg} 0%, ${COLORS.bgBlue} 50%, ${COLORS.bg} 100%)` }}
-        />
-        {/* Blue ambient orb */}
-        <div
-          className="absolute rounded-full animate-float"
-          style={{
-            width: '80vw',
-            height: '80vw',
-            maxWidth: '900px',
-            maxHeight: '900px',
-            top: '5%',
-            left: '-15%',
-            background: `radial-gradient(circle, ${COLORS.accent}12 0%, transparent 70%)`,
-            filter: 'blur(100px)',
-          }}
-        />
-        {/* Purple ambient orb */}
-        <div
-          className="absolute rounded-full animate-float-delayed"
-          style={{
-            width: '60vw',
-            height: '60vw',
-            maxWidth: '700px',
-            maxHeight: '700px',
-            bottom: '10%',
-            right: '-10%',
-            background: 'radial-gradient(circle, rgba(147,51,234,0.08) 0%, transparent 70%)',
-            filter: 'blur(80px)',
-          }}
-        />
-        {/* Noise texture */}
-        <div
-          className="absolute inset-0 opacity-[0.02] mix-blend-overlay"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-          }}
-        />
-      </div>
+    <div style={{ background: BG_PRIMARY, color: TEXT_PRIMARY, minHeight: '100vh' }}>
 
-      {/* ============================================================ */}
-      {/*  NAVBAR — Spool branded, not Lance Studio                    */}
-      {/* ============================================================ */}
-      <motion.nav
-        className="fixed top-0 left-0 right-0 z-50"
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: SPRING }}
-      >
-        <div className="backdrop-blur-2xl bg-black/40 border-b border-white/[0.06]">
-          <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <img src="/spool-tracker-logo.png" alt="Spool" className="w-7 h-7 rounded-lg" />
-              <span className="text-white text-sm font-semibold tracking-wide">Spool</span>
-            </div>
-            <a
-              href={APP_STORE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 active:scale-[0.96]"
-              style={{
-                background: COLORS.accent,
-                color: '#fff',
-                boxShadow: `0 0 20px ${COLORS.accent}40`,
-              }}
-            >
-              <AppleLogo className="w-4 h-4" />
-              Download
-            </a>
-          </div>
-          <motion.div
-            className="h-[1px]"
-            style={{ width: progressWidth, background: COLORS.accent }}
-          />
-        </div>
-      </motion.nav>
-
-      {/* ============================================================ */}
-      {/*  HERO — full viewport, app icon, title, tagline              */}
-      {/* ============================================================ */}
-      <motion.section
-        ref={heroRef}
-        className="relative min-h-screen flex items-center justify-center px-6 pt-14"
+      {/* ── NAV ── */}
+      <nav
         style={{
-          scale: heroScale,
-          opacity: heroOpacity,
-          filter: useTransform(heroBlur, (v) => `blur(${v}px)`),
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 50,
+          background: 'rgba(13, 13, 13, 0.85)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
         }}
       >
-        <div className="max-w-4xl w-full text-center relative z-10">
+        <div style={{
+          maxWidth: 1100,
+          margin: '0 auto',
+          padding: '0 24px',
+          height: 52,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <img
+              src="/spool-tracker-logo.png"
+              alt="Spool"
+              style={{ width: 28, height: 28, borderRadius: 8 }}
+            />
+            <span style={{
+              fontSize: 15,
+              fontWeight: 600,
+              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+              letterSpacing: '-0.01em',
+            }}>
+              Spool
+            </span>
+          </div>
+          <a
+            href={APP_STORE}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '8px 18px',
+              borderRadius: 999,
+              background: ACCENT,
+              color: '#fff',
+              fontSize: 13,
+              fontWeight: 600,
+              textDecoration: 'none',
+              transition: 'opacity 0.2s',
+            }}
+          >
+            <AppleLogo size={14} />
+            Download
+          </a>
+        </div>
+        <motion.div style={{ height: 2, background: ACCENT, width: progressWidth }} />
+      </nav>
+
+      {/* ── HERO ── */}
+      <motion.section
+        ref={heroRef}
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '80px 24px 40px',
+          opacity: heroOpacity,
+          y: heroY,
+        }}
+      >
+        <div style={{ maxWidth: 680, textAlign: 'center' }}>
           {/* App icon */}
           <motion.div
-            className="mb-10"
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.85 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, ease: SPRING, delay: 0.1 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            style={{ marginBottom: 40 }}
           >
-            <div className="relative inline-block">
-              <div
-                className="absolute inset-0 rounded-[2rem] blur-[60px]"
-                style={{ background: `${COLORS.accent}30` }}
-              />
-              <img
-                src="/spool-tracker-logo.png"
-                alt="Spool"
-                className="relative w-28 h-28 md:w-36 md:h-36 rounded-[2rem] shadow-2xl ring-1 ring-white/10"
-              />
-            </div>
+            <img
+              src="/spool-tracker-logo.png"
+              alt="Spool"
+              style={{
+                width: 120,
+                height: 120,
+                borderRadius: 28,
+                boxShadow: `0 0 80px ${ACCENT}25, 0 20px 60px rgba(0,0,0,0.5)`,
+                margin: '0 auto',
+                display: 'block',
+              }}
+            />
           </motion.div>
 
-          {/* Title */}
+          {/* Headline */}
           <motion.h1
-            className="text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tight leading-[0.95] mb-6"
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: SPRING, delay: 0.2 }}
-            style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", system-ui, sans-serif' }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
+            style={{
+              fontSize: 'clamp(40px, 8vw, 72px)',
+              fontWeight: 700,
+              lineHeight: 1.05,
+              letterSpacing: '-0.03em',
+              margin: '0 0 20px',
+              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif',
+            }}
           >
             Track every gram.
           </motion.h1>
 
-          {/* Tagline */}
+          {/* Subtitle */}
           <motion.p
-            className="text-xl md:text-2xl max-w-xl mx-auto mb-12 font-light leading-relaxed"
-            style={{ color: COLORS.textSecondary }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: SPRING, delay: 0.4 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
+            style={{
+              fontSize: 'clamp(17px, 2.5vw, 21px)',
+              color: TEXT_SECONDARY,
+              lineHeight: 1.5,
+              maxWidth: 480,
+              margin: '0 auto 48px',
+              fontWeight: 400,
+            }}
           >
-            The complete filament management system for 3D printing.
-            Built for precision. Designed for makers.
+            The complete filament management system for 3D printing. Built for precision. Designed for makers.
           </motion.p>
 
-          {/* CTAs */}
+          {/* CTA */}
           <motion.div
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: SPRING, delay: 0.55 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.45 }}
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}
           >
-            {/* App Store button — Liquid Button style from design system */}
             <a
-              href={APP_STORE_URL}
+              href={APP_STORE}
               target="_blank"
               rel="noopener noreferrer"
-              className="relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-semibold text-white overflow-hidden transition-transform duration-300 active:scale-[0.96]"
               style={{
-                background: `linear-gradient(135deg, ${COLORS.accent}, ${COLORS.accentLight})`,
-                boxShadow: `0 4px 20px ${COLORS.accent}40, 0 8px 40px ${COLORS.accent}20`,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '16px 32px',
+                borderRadius: RADIUS_MD,
+                background: ACCENT,
+                color: '#fff',
+                fontSize: 16,
+                fontWeight: 600,
+                textDecoration: 'none',
+                boxShadow: `0 4px 24px ${ACCENT}40`,
+                transition: 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
               }}
             >
-              {/* Shimmer overlay */}
-              <div
-                className="absolute inset-0 animate-shimmer"
-                style={{
-                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)',
-                  animationDuration: '3s',
-                  animationIterationCount: 'infinite',
-                }}
-              />
-              <AppleLogo className="w-6 h-6 relative z-10" />
-              <div className="text-left relative z-10">
-                <div className="text-[10px] opacity-70 leading-tight">Download on the</div>
-                <div className="text-base font-semibold leading-tight">App Store</div>
-              </div>
+              <AppleLogo size={22} />
+              <span>Download on the App Store</span>
             </a>
-
             <button
-              onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
-              className="inline-flex items-center gap-2 px-6 py-4 rounded-2xl transition-all duration-300"
-              style={{ color: COLORS.textSecondary }}
+              onClick={() => document.getElementById('statement')?.scrollIntoView({ behavior: 'smooth' })}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: TEXT_TERTIARY,
+                fontSize: 14,
+                cursor: 'pointer',
+                padding: '8px 16px',
+                fontFamily: 'inherit',
+              }}
             >
-              <span>See features</span>
-              <motion.svg
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-                animate={{ y: [0, 4, 0] }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </motion.svg>
+              Scroll to explore ↓
             </button>
           </motion.div>
         </div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          className="absolute bottom-10 left-1/2 -translate-x-1/2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-        >
-          <div className="w-5 h-8 rounded-full border border-white/20 flex items-start justify-center p-1">
-            <motion.div
-              className="w-1 h-1 rounded-full bg-white/50"
-              animate={{ y: [0, 12, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            />
-          </div>
-        </motion.div>
       </motion.section>
 
-      {/* ============================================================ */}
-      {/*  STATEMENT — big typographic moment                          */}
-      {/* ============================================================ */}
-      <section className="relative py-40 md:py-52 px-6" id="features">
-        <div className="max-w-5xl mx-auto">
-          <Reveal>
-            <h2
-              className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.08] tracking-tight"
-              style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", system-ui, sans-serif' }}
-            >
-              2,800+ filaments.
-              <br />
-              <span style={{ color: COLORS.accent }}>One tap to add.</span>
-              <br />
-              <span style={{ color: COLORS.textTertiary }}>Zero data entry.</span>
+      {/* ── STATEMENT ── */}
+      <section id="statement" style={{ padding: '120px 24px 140px' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+          <ScrollReveal>
+            <h2 style={{
+              fontSize: 'clamp(32px, 6vw, 60px)',
+              fontWeight: 700,
+              lineHeight: 1.1,
+              letterSpacing: '-0.02em',
+              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif',
+            }}>
+              2,800+ filaments.{' '}
+              <span style={{ color: ACCENT }}>One tap to add.</span>{' '}
+              <span style={{ color: TEXT_TERTIARY }}>Zero data entry.</span>
             </h2>
-          </Reveal>
-          <Reveal delay={0.15}>
-            <p className="mt-8 text-lg md:text-xl max-w-2xl leading-relaxed" style={{ color: COLORS.textSecondary }}>
-              The largest built-in filament database on iOS — covering Bambu Lab, Prusament,
-              Polymaker, eSUN, Hatchbox, Overture, and dozens more. Every filament includes
-              brand, material, colour, diameter, and print temperatures.
+          </ScrollReveal>
+          <ScrollReveal delay={0.1}>
+            <p style={{
+              marginTop: 28,
+              fontSize: 18,
+              lineHeight: 1.65,
+              color: TEXT_SECONDARY,
+              maxWidth: 600,
+            }}>
+              The largest built-in filament database on iOS — Bambu Lab, Prusament,
+              Polymaker, eSUN, Hatchbox, Overture, and dozens more. Brand, material,
+              colour, diameter, and print temperatures included.
             </p>
-          </Reveal>
+          </ScrollReveal>
         </div>
       </section>
 
-      {/* ============================================================ */}
-      {/*  FEATURE: DATABASE — with interactive mockup                  */}
-      {/* ============================================================ */}
-      <FeatureSection
-        label="The Database"
-        title="Browse. Tap. Done."
-        titleAccent="No manual entry needed."
-        description="Search by name, brand, material, or colour. Each entry includes hex colour preview, recommended temperatures, diameter, and brand info. Just tap to add any filament to your collection."
-      >
-        <GlassCard className="max-w-md mx-auto lg:mx-0 lg:ml-auto">
-          {/* Search bar */}
-          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.06] mb-4">
-            <svg className="w-4 h-4" style={{ color: COLORS.textTertiary }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
-            <span className="text-sm" style={{ color: COLORS.textTertiary }}>Search filaments…</span>
-          </div>
-          {/* Entries */}
-          <div className="space-y-1.5">
-            {DATABASE_ENTRIES.map((entry, i) => (
-              <motion.div
-                key={i}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.05] transition-all duration-300 cursor-default"
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, ease: SPRING, delay: i * 0.05 }}
-              >
-                <div
-                  className="w-8 h-8 rounded-full flex-shrink-0 ring-1 ring-white/10"
-                  style={{ backgroundColor: entry.colour }}
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="text-white text-sm font-medium truncate">{entry.name}</div>
-                  <div className="text-xs" style={{ color: COLORS.textTertiary }}>{entry.brand} · {entry.weight}</div>
-                </div>
-                <span
-                  className="px-2.5 py-1 rounded-full text-[9px] font-bold tracking-wider uppercase"
-                  style={{
-                    background: `${MATERIAL_COLORS[entry.material] || COLORS.accent}20`,
-                    color: MATERIAL_COLORS[entry.material] || COLORS.accent,
-                  }}
-                >
-                  {entry.material}
-                </span>
-              </motion.div>
-            ))}
-          </div>
-          <div className="text-center mt-4">
-            <span className="text-xs" style={{ color: COLORS.textTertiary }}>+ 2,795 more</span>
-          </div>
-        </GlassCard>
-      </FeatureSection>
-
-      {/* ============================================================ */}
-      {/*  FEATURE: ANALYTICS                                          */}
-      {/* ============================================================ */}
-      <FeatureSection
-        label="Analytics"
-        title="Know the true cost"
-        titleAccent="of every print."
-        description="Track inventory value, cost per print, and weight usage with decimal precision. Monitor energy costs, material breakdowns, usage trends, and spending patterns — all computed automatically."
-        reverse
-      >
-        <GlassCard className="max-w-md mx-auto lg:mx-0">
-          {/* Stats row */}
-          <div className="grid grid-cols-3 gap-2 mb-5">
-            {[
-              { val: '£142.50', lbl: 'Inventory', color: '#22c55e' },
-              { val: '£0.82',   lbl: 'Per Print', color: '#f97316' },
-              { val: '2.4kg',   lbl: 'This Month', color: COLORS.accent },
-            ].map((s) => (
-              <div key={s.lbl} className="text-center p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-                <div className="text-white text-lg font-bold font-mono">{s.val}</div>
-                <div className="text-[10px] mt-1" style={{ color: COLORS.textTertiary }}>{s.lbl}</div>
-              </div>
-            ))}
-          </div>
-          {/* Mini bar chart */}
-          <div className="flex items-end justify-between gap-1.5 h-28 px-1">
-            {[35, 55, 45, 72, 60, 85, 40, 68, 52, 78, 42, 90].map((h, i) => (
-              <div key={i} className="flex-1 flex flex-col items-center">
-                <motion.div
-                  className="w-full rounded-t-sm"
-                  style={{
-                    background: `linear-gradient(to top, ${COLORS.accent}60, ${COLORS.accent}20)`,
-                  }}
-                  initial={{ height: 0 }}
-                  whileInView={{ height: `${h}%` }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, ease: SPRING, delay: i * 0.03 }}
-                />
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-between mt-2 px-1">
-            <span className="text-[10px]" style={{ color: COLORS.textTertiary }}>Jan</span>
-            <span className="text-[10px]" style={{ color: COLORS.textTertiary }}>Dec</span>
-          </div>
-        </GlassCard>
-      </FeatureSection>
-
-      {/* ============================================================ */}
-      {/*  FEATURE: BAMBU SYNC — premium hero callout                  */}
-      {/* ============================================================ */}
-      <section className="relative py-32 md:py-40 px-6 overflow-hidden">
-        {/* Accent glow behind */}
-        <div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full"
-          style={{ background: `${COLORS.accent}08`, filter: 'blur(100px)' }}
-        />
-
-        <div className="max-w-4xl mx-auto relative z-10">
-          <Reveal>
-            <GlassCard hover={false} className="overflow-hidden">
-              <div className="p-8 md:p-14 text-center relative">
-                {/* Gradient border accent */}
-                <div
-                  className="absolute inset-0 rounded-[20px] pointer-events-none"
-                  style={{
-                    background: `linear-gradient(135deg, ${COLORS.accent}10, transparent 40%, transparent 60%, ${COLORS.accent}08)`,
-                  }}
-                />
-
-                <div className="relative z-10">
-                  <Reveal>
-                    <span
-                      className="text-xs font-semibold tracking-[0.3em] uppercase block mb-6"
-                      style={{ color: COLORS.accent, opacity: 0.7 }}
-                    >
-                      Bambu Lab Integration
-                    </span>
-                  </Reveal>
-
-                  <Reveal delay={0.05}>
-                    <div
-                      className="w-16 h-16 rounded-2xl border flex items-center justify-center mx-auto mb-8"
-                      style={{ background: `${COLORS.accent}10`, borderColor: `${COLORS.accent}20` }}
-                    >
-                      <svg className="w-8 h-8" style={{ color: COLORS.accent }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15a4.5 4.5 0 004.5 4.5H18a3.75 3.75 0 001.332-7.257 3 3 0 00-3.758-3.848 5.25 5.25 0 00-10.233 2.33A4.502 4.502 0 002.25 15z" />
-                      </svg>
-                    </div>
-                  </Reveal>
-
-                  <Reveal delay={0.1}>
-                    <h2
-                      className="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight tracking-tight"
-                      style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", system-ui, sans-serif' }}
-                    >
-                      Your Bambu printer.
-                      <br />
-                      <span style={{ color: COLORS.accent }}>Automatically synced.</span>
-                    </h2>
-                  </Reveal>
-
-                  <Reveal delay={0.15}>
-                    <p className="text-lg leading-relaxed max-w-xl mx-auto mb-10" style={{ color: COLORS.textSecondary }}>
-                      Connect to the Bambu Lab Cloud API. Spool auto-imports your complete
-                      print history — name, duration, material, and weight consumed.
-                      No manual logging.
-                    </p>
-                  </Reveal>
-
-                  <Reveal delay={0.2}>
-                    <div className="flex flex-wrap items-center justify-center gap-3">
-                      {BAMBU_PRINTERS.map((printer, i) => (
-                        <motion.span
-                          key={printer}
-                          className="px-5 py-2.5 rounded-full text-sm font-medium border"
-                          style={{
-                            background: 'rgba(255,255,255,0.04)',
-                            borderColor: 'rgba(255,255,255,0.1)',
-                            color: COLORS.textPrimary,
-                          }}
-                          initial={{ opacity: 0, y: 10 }}
-                          whileInView={{ opacity: 1, y: 0 }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.5, ease: SPRING, delay: 0.25 + i * 0.05 }}
-                        >
-                          {printer}
-                        </motion.span>
-                      ))}
-                    </div>
-                  </Reveal>
-                </div>
-              </div>
-            </GlassCard>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/*  FEATURE GRID — 2x3                                          */}
-      {/* ============================================================ */}
-      <section className="py-32 md:py-40 px-6">
-        <div className="max-w-6xl mx-auto">
-          <Reveal>
-            <div className="text-center mb-20">
-              <h2
-                className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight"
-                style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", system-ui, sans-serif' }}
-              >
-                Everything you need.
+      {/* ── DATABASE ── */}
+      <section style={{ padding: '0 24px 140px' }}>
+        <div style={{
+          maxWidth: 1100,
+          margin: '0 auto',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 440px), 1fr))',
+          gap: 64,
+          alignItems: 'center',
+        }}>
+          {/* Text */}
+          <div>
+            <ScrollReveal>
+              <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: ACCENT, marginBottom: 16 }}>
+                The Database
+              </p>
+              <h2 style={{
+                fontSize: 'clamp(28px, 4vw, 44px)',
+                fontWeight: 700,
+                lineHeight: 1.15,
+                letterSpacing: '-0.02em',
+                marginBottom: 20,
+                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif',
+              }}>
+                Browse. Tap. Done.
               </h2>
-              <p className="mt-4 text-lg" style={{ color: COLORS.textTertiary }}>
-                Nothing you don't.
+            </ScrollReveal>
+            <ScrollReveal delay={0.08}>
+              <p style={{ fontSize: 17, lineHeight: 1.6, color: TEXT_SECONDARY, marginBottom: 28 }}>
+                Search by name, brand, material, or colour. Each entry includes hex colour
+                preview, temperatures, diameter, and brand. Tap to add to your collection.
+              </p>
+            </ScrollReveal>
+            <ScrollReveal delay={0.14}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {['PLA', 'PETG', 'ABS', 'TPU', 'ASA', 'Nylon'].map((m) => (
+                  <span key={m} style={{
+                    padding: '5px 12px',
+                    borderRadius: 999,
+                    fontSize: 11,
+                    fontWeight: 700,
+                    fontFamily: 'ui-monospace, "SF Mono", monospace',
+                    letterSpacing: '0.05em',
+                    background: `${MAT[m] || ACCENT}18`,
+                    color: MAT[m] || ACCENT,
+                  }}>
+                    {m}
+                  </span>
+                ))}
+              </div>
+            </ScrollReveal>
+          </div>
+
+          {/* Card mockup — solid card, NOT glass */}
+          <ScrollReveal delay={0.1}>
+            <div style={{
+              background: BG_CARD,
+              borderRadius: RADIUS_XL,
+              padding: 20,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+            }}>
+              {/* Search */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                padding: '10px 14px',
+                borderRadius: 12,
+                background: 'rgba(255,255,255,0.06)',
+                marginBottom: 12,
+                fontSize: 14,
+                color: TEXT_TERTIARY,
+              }}>
+                <span style={{ opacity: 0.5 }}>⌕</span>
+                Search 2,800+ filaments…
+              </div>
+              {/* Entries */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {DATABASE_ENTRIES.map((e, i) => (
+                  <div key={i} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    padding: '10px 12px',
+                    borderRadius: 14,
+                    background: 'rgba(255,255,255,0.03)',
+                    transition: 'background 0.2s',
+                  }}>
+                    <div style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 16,
+                      background: e.colour,
+                      flexShrink: 0,
+                      boxShadow: `0 0 12px ${e.colour}40`,
+                    }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 14, fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{e.name}</div>
+                      <div style={{ fontSize: 12, color: TEXT_TERTIARY }}>{e.brand} · {e.weight}</div>
+                    </div>
+                    <span style={{
+                      padding: '3px 8px',
+                      borderRadius: 999,
+                      fontSize: 9,
+                      fontWeight: 700,
+                      fontFamily: 'ui-monospace, "SF Mono", monospace',
+                      background: `${MAT[e.material] || ACCENT}20`,
+                      color: MAT[e.material] || ACCENT,
+                      letterSpacing: '0.06em',
+                    }}>
+                      {e.material}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <p style={{ textAlign: 'center', marginTop: 14, fontSize: 12, color: TEXT_TERTIARY }}>
+                + 2,795 more
               </p>
             </div>
-          </Reveal>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {FEATURES.map((feature, i) => (
-              <Reveal key={feature.title} delay={i * 0.05}>
-                <GlassCard className="h-full">
-                  <div
-                    className="w-12 h-12 rounded-xl border flex items-center justify-center mb-5 transition-transform duration-500 group-hover:scale-110"
-                    style={{
-                      background: `${COLORS.accent}08`,
-                      borderColor: `${COLORS.accent}15`,
-                      color: COLORS.accent,
-                    }}
-                  >
-                    {feature.icon}
-                  </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
-                  <p className="text-sm leading-relaxed" style={{ color: COLORS.textSecondary }}>
-                    {feature.desc}
-                  </p>
-                </GlassCard>
-              </Reveal>
-            ))}
-          </div>
+          </ScrollReveal>
         </div>
       </section>
 
-      {/* ============================================================ */}
-      {/*  STATS — three numbers, clean                                */}
-      {/* ============================================================ */}
-      <section className="py-24 px-6 relative">
-        <div
-          className="absolute inset-0"
-          style={{ background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.008), transparent)' }}
-        />
-        <div className="max-w-4xl mx-auto relative z-10">
-          <div className="grid grid-cols-3 gap-8">
-            {[
-              { value: '2,800+', label: 'Filaments' },
-              { value: '0.1g', label: 'Precision' },
-              { value: '∞', label: 'iCloud Sync' },
-            ].map((stat, i) => (
-              <Reveal key={stat.label} delay={i * 0.08}>
-                <div className="text-center">
-                  <div
-                    className="text-4xl md:text-5xl font-bold text-white mb-2 font-mono"
-                    style={{ textShadow: `0 0 40px ${COLORS.accent}20` }}
-                  >
-                    {stat.value}
+      {/* ── ANALYTICS ── */}
+      <section style={{ padding: '0 24px 140px' }}>
+        <div style={{
+          maxWidth: 1100,
+          margin: '0 auto',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 440px), 1fr))',
+          gap: 64,
+          alignItems: 'center',
+        }}>
+          {/* Card mockup first on desktop */}
+          <ScrollReveal delay={0.1}>
+            <div style={{
+              background: BG_CARD,
+              borderRadius: RADIUS_XL,
+              padding: 20,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+            }}>
+              {/* Stats */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 20 }}>
+                {[
+                  { val: '£142.50', lbl: 'Inventory', clr: '#34C759' },
+                  { val: '£0.82',   lbl: 'Per Print', clr: '#FF9500' },
+                  { val: '2.4kg',   lbl: 'This Month', clr: ACCENT },
+                ].map((s) => (
+                  <div key={s.lbl} style={{
+                    textAlign: 'center',
+                    padding: 12,
+                    borderRadius: 14,
+                    background: 'rgba(255,255,255,0.04)',
+                  }}>
+                    <div style={{ fontSize: 18, fontWeight: 700, fontFamily: 'ui-monospace, "SF Mono", monospace' }}>{s.val}</div>
+                    <div style={{ fontSize: 10, color: TEXT_TERTIARY, marginTop: 4 }}>{s.lbl}</div>
                   </div>
-                  <div className="text-xs tracking-widest uppercase" style={{ color: COLORS.textTertiary }}>
-                    {stat.label}
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/*  FINAL CTA                                                    */}
-      {/* ============================================================ */}
-      <section className="py-40 md:py-52 px-6 relative overflow-hidden">
-        {/* Ambient glow */}
-        <div
-          className="absolute left-1/2 bottom-0 -translate-x-1/2 w-[800px] h-[400px] rounded-full"
-          style={{ background: `${COLORS.accent}06`, filter: 'blur(120px)' }}
-        />
-
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <Reveal>
-            <h2
-              className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 tracking-tight"
-              style={{
-                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", system-ui, sans-serif',
-                textShadow: `0 0 80px ${COLORS.accent}15`,
-              }}
-            >
-              Start tracking.
-            </h2>
-          </Reveal>
-
-          <Reveal delay={0.1}>
-            <p className="text-xl max-w-md mx-auto mb-14 leading-relaxed" style={{ color: COLORS.textSecondary }}>
-              Free on the App Store.
-            </p>
-          </Reveal>
-
-          <Reveal delay={0.2}>
-            <a
-              href={APP_STORE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="relative inline-flex items-center gap-3 px-10 py-5 rounded-2xl font-semibold text-white text-lg overflow-hidden transition-transform duration-300 active:scale-[0.96]"
-              style={{
-                background: `linear-gradient(135deg, ${COLORS.accent}, ${COLORS.accentLight})`,
-                boxShadow: `0 4px 30px ${COLORS.accent}40, 0 12px 60px ${COLORS.accent}20`,
-              }}
-            >
-              <div
-                className="absolute inset-0 animate-shimmer"
-                style={{
-                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)',
-                  animationDuration: '3s',
-                  animationIterationCount: 'infinite',
-                }}
-              />
-              <AppleLogo className="w-7 h-7 relative z-10" />
-              <div className="text-left relative z-10">
-                <div className="text-xs opacity-70 leading-tight">Download on the</div>
-                <div className="text-lg font-semibold leading-tight">App Store</div>
+                ))}
               </div>
-            </a>
-          </Reveal>
+              {/* Bar chart */}
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 100, padding: '0 4px' }}>
+                {[35, 55, 45, 72, 60, 85, 40, 68, 52, 78, 42, 90].map((h, i) => (
+                  <div key={i} style={{
+                    flex: 1,
+                    height: `${h}%`,
+                    borderRadius: '3px 3px 0 0',
+                    background: `linear-gradient(to top, ${ACCENT}, ${ACCENT}60)`,
+                    opacity: 0.7 + (h / 100) * 0.3,
+                  }} />
+                ))}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 4px 0', fontSize: 10, color: TEXT_TERTIARY }}>
+                <span>Jan</span>
+                <span>Dec</span>
+              </div>
+            </div>
+          </ScrollReveal>
+
+          {/* Text */}
+          <div>
+            <ScrollReveal>
+              <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: ACCENT, marginBottom: 16 }}>
+                Analytics
+              </p>
+              <h2 style={{
+                fontSize: 'clamp(28px, 4vw, 44px)',
+                fontWeight: 700,
+                lineHeight: 1.15,
+                letterSpacing: '-0.02em',
+                marginBottom: 20,
+                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif',
+              }}>
+                Know the true cost of every print.
+              </h2>
+            </ScrollReveal>
+            <ScrollReveal delay={0.08}>
+              <p style={{ fontSize: 17, lineHeight: 1.6, color: TEXT_SECONDARY }}>
+                Track inventory value, cost per print, and weight usage with
+                decimal precision. Monitor energy costs, material breakdowns,
+                usage trends, and spending patterns — all computed automatically.
+              </p>
+            </ScrollReveal>
+          </div>
         </div>
       </section>
 
-      {/* ============================================================ */}
-      {/*  FOOTER — minimal                                            */}
-      {/* ============================================================ */}
-      <footer className="py-12 px-6 border-t border-white/[0.04]">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <img src="/spool-tracker-logo.png" alt="Spool" className="w-5 h-5 rounded-md opacity-50" />
-            <Link
-              to="/"
-              className="text-xs tracking-wide hover:text-white/60 transition-colors"
-              style={{ color: COLORS.textTertiary }}
-            >
-              A Lance Studio product
-            </Link>
+      {/* ── BAMBU SYNC ── */}
+      <section style={{ padding: '0 24px 140px' }}>
+        <div style={{ maxWidth: 720, margin: '0 auto' }}>
+          <ScrollReveal>
+            <div style={{
+              background: BG_CARD,
+              borderRadius: RADIUS_XL,
+              padding: 'clamp(32px, 6vw, 64px)',
+              textAlign: 'center',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+              position: 'relative',
+              overflow: 'hidden',
+            }}>
+              {/* Subtle accent tint at top */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 2,
+                background: `linear-gradient(90deg, transparent, ${ACCENT}, transparent)`,
+              }} />
+
+              <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: ACCENT, marginBottom: 24 }}>
+                Bambu Lab Integration
+              </p>
+
+              <h2 style={{
+                fontSize: 'clamp(28px, 5vw, 44px)',
+                fontWeight: 700,
+                lineHeight: 1.15,
+                letterSpacing: '-0.02em',
+                marginBottom: 20,
+                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif',
+              }}>
+                Your Bambu printer.{' '}
+                <span style={{ color: ACCENT }}>Automatically synced.</span>
+              </h2>
+
+              <p style={{
+                fontSize: 17,
+                lineHeight: 1.6,
+                color: TEXT_SECONDARY,
+                maxWidth: 480,
+                margin: '0 auto 32px',
+              }}>
+                Connect to the Bambu Lab Cloud API. Auto-import your complete
+                print history — name, duration, material, and weight consumed.
+              </p>
+
+              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 10 }}>
+                {BAMBU_PRINTERS.map((p) => (
+                  <span key={p} style={{
+                    padding: '8px 18px',
+                    borderRadius: 999,
+                    fontSize: 13,
+                    fontWeight: 500,
+                    background: 'rgba(255,255,255,0.06)',
+                    color: TEXT_PRIMARY,
+                  }}>
+                    {p}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ── FEATURES GRID ── */}
+      <section style={{ padding: '0 24px 140px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <ScrollReveal>
+            <div style={{ textAlign: 'center', marginBottom: 64 }}>
+              <h2 style={{
+                fontSize: 'clamp(28px, 5vw, 48px)',
+                fontWeight: 700,
+                letterSpacing: '-0.02em',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif',
+              }}>
+                Everything you need.
+              </h2>
+              <p style={{ fontSize: 17, color: TEXT_TERTIARY, marginTop: 8 }}>Nothing you don't.</p>
+            </div>
+          </ScrollReveal>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))',
+            gap: 16,
+          }}>
+            {FEATURES.map((f, i) => (
+              <ScrollReveal key={f.title} delay={i * 0.04}>
+                <div style={{
+                  background: BG_CARD,
+                  borderRadius: RADIUS_LG,
+                  padding: 24,
+                  height: '100%',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+                }}>
+                  <h3 style={{ fontSize: 17, fontWeight: 600, marginBottom: 8 }}>{f.title}</h3>
+                  <p style={{ fontSize: 14, lineHeight: 1.55, color: TEXT_SECONDARY, margin: 0 }}>{f.desc}</p>
+                </div>
+              </ScrollReveal>
+            ))}
           </div>
-          <div className="flex items-center gap-6">
-            <a
-              href="/privacy.html"
-              className="text-xs hover:text-white/60 transition-colors"
-              style={{ color: COLORS.textTertiary }}
-            >
-              Privacy
-            </a>
-            <a
-              href="mailto:hello@lance-studio.com"
-              className="text-xs hover:text-white/60 transition-colors"
-              style={{ color: COLORS.textTertiary }}
-            >
-              Contact
-            </a>
+        </div>
+      </section>
+
+      {/* ── STATS ── */}
+      <section style={{ padding: '0 24px 140px' }}>
+        <div style={{
+          maxWidth: 700,
+          margin: '0 auto',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: 24,
+        }}>
+          {[
+            { value: '2,800+', label: 'Filaments' },
+            { value: '0.1g',   label: 'Precision' },
+            { value: '∞',      label: 'iCloud Sync' },
+          ].map((s, i) => (
+            <ScrollReveal key={s.label} delay={i * 0.06}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{
+                  fontSize: 'clamp(32px, 5vw, 48px)',
+                  fontWeight: 700,
+                  fontFamily: 'ui-monospace, "SF Mono", monospace',
+                  marginBottom: 6,
+                }}>
+                  {s.value}
+                </div>
+                <div style={{
+                  fontSize: 11,
+                  fontWeight: 500,
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  color: TEXT_TERTIARY,
+                }}>
+                  {s.label}
+                </div>
+              </div>
+            </ScrollReveal>
+          ))}
+        </div>
+      </section>
+
+      {/* ── FINAL CTA ── */}
+      <section style={{ padding: '80px 24px 140px', textAlign: 'center' }}>
+        <ScrollReveal>
+          <h2 style={{
+            fontSize: 'clamp(36px, 7vw, 64px)',
+            fontWeight: 700,
+            letterSpacing: '-0.03em',
+            marginBottom: 16,
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif',
+          }}>
+            Start tracking.
+          </h2>
+        </ScrollReveal>
+        <ScrollReveal delay={0.08}>
+          <p style={{ fontSize: 18, color: TEXT_SECONDARY, marginBottom: 40 }}>Free on the App Store.</p>
+        </ScrollReveal>
+        <ScrollReveal delay={0.15}>
+          <a
+            href={APP_STORE}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 12,
+              padding: '18px 36px',
+              borderRadius: RADIUS_MD,
+              background: ACCENT,
+              color: '#fff',
+              fontSize: 17,
+              fontWeight: 600,
+              textDecoration: 'none',
+              boxShadow: `0 4px 30px ${ACCENT}40`,
+              transition: 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
+            }}
+          >
+            <AppleLogo size={24} />
+            <span>Download on the App Store</span>
+          </a>
+        </ScrollReveal>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer style={{
+        padding: '32px 24px',
+        borderTop: '1px solid rgba(255,255,255,0.06)',
+      }}>
+        <div style={{
+          maxWidth: 1100,
+          margin: '0 auto',
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 16,
+          fontSize: 12,
+          color: TEXT_TERTIARY,
+        }}>
+          <Link to="/" style={{ color: TEXT_TERTIARY, textDecoration: 'none' }}>
+            A Lance Studio product
+          </Link>
+          <div style={{ display: 'flex', gap: 20 }}>
+            <a href="/privacy.html" style={{ color: TEXT_TERTIARY, textDecoration: 'none' }}>Privacy</a>
+            <a href="mailto:hello@lance-studio.com" style={{ color: TEXT_TERTIARY, textDecoration: 'none' }}>Contact</a>
           </div>
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.15)' }}>
-            © 2026 Lance Studio
-          </p>
+          <span style={{ color: 'rgba(255,255,255,0.12)' }}>© 2026 Lance Studio</span>
         </div>
       </footer>
     </div>

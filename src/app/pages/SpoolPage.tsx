@@ -97,14 +97,20 @@ function AnimatedStat({ value, label }: { value: string; label: string }) {
 /*  Main page                                                          */
 /* ------------------------------------------------------------------ */
 export default function SpoolPage() {
-  const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
 
-  const { scrollYProgress } = useScroll({ target: containerRef });
-  const heroScale = useTransform(scrollYProgress, [0, 0.15], [1, 0.92]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
+  // Page-level scroll progress (for progress bar)
+  const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 50, damping: 20 });
   const progressWidth = useTransform(smoothProgress, [0, 1], ['0%', '100%']);
+
+  // Hero parallax — tied to the hero element leaving viewport
+  const { scrollYProgress: heroProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start'],
+  });
+  const heroScale = useTransform(heroProgress, [0, 0.8], [1, 0.92]);
+  const heroOpacity = useTransform(heroProgress, [0, 0.7], [1, 0]);
 
   const [scrolled, setScrolled] = useState(false);
 
@@ -116,7 +122,7 @@ export default function SpoolPage() {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative w-full bg-[#0a0a0a]">
+    <div className="relative w-full bg-[#0a0a0a]">
       <AnimatedBackground />
 
       {/* ============================================================ */}

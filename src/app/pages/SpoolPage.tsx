@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, useSpring } from 'motion/react';
+import { FilamentSpool } from '../components/spool/FilamentSpool';
 
 /* ------------------------------------------------------------------ */
 /*  Spool design system tokens (from SPOOL_DESIGN_SYSTEM.md)           */
@@ -119,6 +120,33 @@ const FEATURES = [
 ];
 
 const BAMBU_PRINTERS = ['X1 Carbon', 'P1S', 'A1', 'A1 Mini'];
+
+const TESTIMONIALS = [
+  {
+    quote: 'The most feature-complete filament management app on any platform.',
+    attribution: 'Independent review',
+    featured: true,
+  },
+  {
+    quote: "I thought it would just measure filament, but it does so much more — cost per print, Bambu Cloud integration, adding prints with a single tap. It honestly feels like it was designed by Apple themselves. Keep making apps like this!",
+    attribution: 'Spool user',
+    featured: false,
+  },
+  {
+    quote: 'Wow, this is amazing so far.',
+    attribution: 'Spool user',
+    featured: false,
+  },
+];
+
+const SPOOL_SHOWCASE = [
+  { colors: ['#FF6B35'], materialType: 0, label: 'PLA' },
+  { colors: ['#1E3A5F'], materialType: 3, label: 'Silk' },
+  { colors: ['#2D1B69'], materialType: 1, label: 'Galaxy', animated: true },
+  { colors: ['#CC3333'], materialType: 2, label: 'Carbon Fiber' },
+  { colors: ['#FF8C00'], materialType: 5, label: 'PETG' },
+  { colors: ['#4CAF50', '#2196F3'], materialType: 7, label: 'Rainbow', animated: true },
+];
 
 /* ------------------------------------------------------------------ */
 /*  Main page                                                          */
@@ -305,6 +333,9 @@ export default function SpoolPage() {
               <AppleLogo size={22} />
               <span>Download on the App Store</span>
             </a>
+            <p style={{ fontSize: 14, color: TEXT_SECONDARY, margin: 0 }}>
+              Free to download · <span style={{ color: TEXT_TERTIARY }}>Pro tier for power users</span>
+            </p>
             <button
               onClick={() => document.getElementById('statement')?.scrollIntoView({ behavior: 'smooth' })}
               style={{
@@ -709,6 +740,120 @@ export default function SpoolPage() {
         </div>
       </section>
 
+      {/* ── FILAMENT SHOWCASE ── */}
+      <section style={{ padding: '0 24px 140px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <ScrollReveal>
+            <div style={{ textAlign: 'center', marginBottom: 48 }}>
+              <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: ACCENT, marginBottom: 16 }}>
+                Premium Visuals
+              </p>
+              <h2 style={{
+                fontSize: 'clamp(28px, 5vw, 48px)',
+                fontWeight: 700,
+                letterSpacing: '-0.02em',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif',
+              }}>
+                Every material, rendered.
+              </h2>
+              <p style={{ fontSize: 17, color: TEXT_TERTIARY, marginTop: 8 }}>
+                Procedural shaders bring your filaments to life.
+              </p>
+            </div>
+          </ScrollReveal>
+          <ScrollReveal delay={0.1}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+              gap: 32,
+            }}>
+              {SPOOL_SHOWCASE.map((s) => (
+                <div key={s.label} style={{ textAlign: 'center' }}>
+                  <FilamentSpool
+                    colors={s.colors}
+                    materialType={s.materialType}
+                    size={120}
+                    animated={s.animated}
+                  />
+                  <p style={{
+                    fontSize: 12,
+                    fontWeight: 500,
+                    color: TEXT_TERTIARY,
+                    marginTop: 10,
+                    letterSpacing: '0.04em',
+                  }}>
+                    {s.label}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ── TESTIMONIALS ── */}
+      <section style={{ padding: '0 24px 140px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <ScrollReveal>
+            <div style={{ textAlign: 'center', marginBottom: 48 }}>
+              <h2 style={{
+                fontSize: 'clamp(28px, 5vw, 48px)',
+                fontWeight: 700,
+                letterSpacing: '-0.02em',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif',
+              }}>
+                Loved by makers.
+              </h2>
+            </div>
+          </ScrollReveal>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))',
+            gap: 16,
+          }}>
+            {TESTIMONIALS.map((t, i) => (
+              <ScrollReveal key={i} delay={i * 0.06}>
+                <div style={{
+                  background: BG_CARD,
+                  borderRadius: RADIUS_LG,
+                  padding: 28,
+                  height: '100%',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                }}>
+                  <div>
+                    <span style={{ fontSize: 32, color: ACCENT, lineHeight: 1, display: 'block', marginBottom: 12 }}>"</span>
+                    <p style={{
+                      fontSize: t.featured ? 18 : 15,
+                      fontWeight: t.featured ? 600 : 400,
+                      lineHeight: 1.55,
+                      color: t.featured ? TEXT_PRIMARY : TEXT_SECONDARY,
+                      margin: 0,
+                      fontStyle: t.featured ? 'normal' : 'normal',
+                    }}>
+                      {t.quote}
+                    </p>
+                  </div>
+                  <p style={{
+                    fontSize: 12,
+                    color: TEXT_TERTIARY,
+                    marginTop: 20,
+                    marginBottom: 0,
+                    fontWeight: 500,
+                    letterSpacing: '0.04em',
+                  }}>
+                    — {t.attribution}
+                  </p>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── FINAL CTA ── */}
       <section style={{ padding: '80px 24px 140px', textAlign: 'center' }}>
         <ScrollReveal>
@@ -723,7 +868,10 @@ export default function SpoolPage() {
           </h2>
         </ScrollReveal>
         <ScrollReveal delay={0.08}>
-          <p style={{ fontSize: 18, color: TEXT_SECONDARY, marginBottom: 40 }}>Free on the App Store.</p>
+          <p style={{ fontSize: 18, color: TEXT_SECONDARY, marginBottom: 12 }}>Free on the App Store.</p>
+        </ScrollReveal>
+        <ScrollReveal delay={0.1}>
+          <p style={{ fontSize: 14, color: TEXT_TERTIARY, marginBottom: 40 }}>Pro tier available for power users.</p>
         </ScrollReveal>
         <ScrollReveal delay={0.15}>
           <a

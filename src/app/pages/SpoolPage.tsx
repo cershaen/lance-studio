@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, useSpring } from 'motion/react';
+import { BarChart, Bar, XAxis, ResponsiveContainer, Cell } from 'recharts';
 import { FilamentSpool } from '../components/spool/FilamentSpool';
 
 /* ------------------------------------------------------------------ */
@@ -85,11 +86,11 @@ function ScrollReveal({
 /*  Data                                                               */
 /* ------------------------------------------------------------------ */
 const DATABASE_ENTRIES = [
-  { colour: '#34C759', name: 'Matte PLA',     brand: 'Bambu Lab',  material: 'PLA',  weight: '1000g' },
-  { colour: '#FF3B30', name: 'Galaxy Red',    brand: 'Prusament',  material: 'PETG', weight: '750g'  },
-  { colour: '#007AFF', name: 'Ocean Blue',    brand: 'Polymaker',  material: 'PLA+', weight: '1000g' },
-  { colour: '#FF9500', name: 'Solar Yellow',  brand: 'eSUN',       material: 'ABS',  weight: '500g'  },
-  { colour: '#AF52DE', name: 'Cosmic Purple', brand: 'Hatchbox',   material: 'TPU',  weight: '800g'  },
+  { name: 'Red Copper',       brand: 'Jayo',       material: 'PLA+ Silk',   weight: '1000g', spoolColors: ['#B5543A'], materialType: 3  },
+  { name: 'Marble Brick Red', brand: 'Sunlu',      material: 'PLA Marble',  weight: '1000g', spoolColors: ['#CC3333'], materialType: 12 },
+  { name: 'Earth Brown',      brand: 'Polymaker',  material: 'PLA+',        weight: '1000g', spoolColors: ['#6B4226'], materialType: 0  },
+  { name: 'Grass Green',      brand: 'Bambu Lab',  material: 'PLA Matte',   weight: '1000g', spoolColors: ['#4CAF50'], materialType: 20 },
+  { name: 'Navy Blue',        brand: 'ELEGOO',     material: 'PLA Matte',   weight: '1000g', spoolColors: ['#1E3A5F'], materialType: 20 },
 ];
 
 const FEATURES = [
@@ -145,8 +146,283 @@ const SPOOL_SHOWCASE = [
   { colors: ['#2D1B69'], materialType: 1, label: 'Galaxy', animated: true },
   { colors: ['#CC3333'], materialType: 2, label: 'Carbon Fiber' },
   { colors: ['#FF8C00'], materialType: 5, label: 'PETG' },
-  { colors: ['#4CAF50', '#2196F3'], materialType: 7, label: 'Rainbow', animated: true },
+  { colors: ['#4CAF50', '#2196F3'], materialType: 7, label: 'Rainbow' },
 ];
+
+/* ------------------------------------------------------------------ */
+/*  Intelligence tabs                                                   */
+/* ------------------------------------------------------------------ */
+const INTEL_TABS = [
+  { id: 'pulse',     label: 'Pulse',     color: '#FF9500' },
+  { id: 'economics', label: 'Economics', color: '#34C759' },
+  { id: 'energy',    label: 'Energy',    color: '#FBBF24' },
+  { id: 'material',  label: 'Material',  color: '#AF52DE' },
+  { id: 'hardware',  label: 'Hardware',  color: '#007AFF' },
+] as const;
+
+const INTEL_DATA: Record<string, {
+  stats: { val: string; lbl: string }[];
+  chart: { month: string; value: number }[];
+}> = {
+  pulse: {
+    stats: [
+      { val: '143', lbl: 'Total Prints' },
+      { val: '92%', lbl: 'Success Rate' },
+      { val: '4.6kg', lbl: 'Consumed' },
+    ],
+    chart: [
+      { month: 'Jan', value: 8 }, { month: 'Feb', value: 12 }, { month: 'Mar', value: 15 },
+      { month: 'Apr', value: 11 }, { month: 'May', value: 18 }, { month: 'Jun', value: 14 },
+      { month: 'Jul', value: 9 }, { month: 'Aug', value: 22 }, { month: 'Sep', value: 16 },
+      { month: 'Oct', value: 19 }, { month: 'Nov', value: 13 }, { month: 'Dec', value: 24 },
+    ],
+  },
+  economics: {
+    stats: [
+      { val: '£142.50', lbl: 'Inventory' },
+      { val: '£0.82', lbl: 'Per Print' },
+      { val: '£28.40', lbl: 'This Month' },
+    ],
+    chart: [
+      { month: 'Jan', value: 18 }, { month: 'Feb', value: 24 }, { month: 'Mar', value: 32 },
+      { month: 'Apr', value: 22 }, { month: 'May', value: 38 }, { month: 'Jun', value: 28 },
+      { month: 'Jul', value: 15 }, { month: 'Aug', value: 42 }, { month: 'Sep', value: 35 },
+      { month: 'Oct', value: 30 }, { month: 'Nov', value: 26 }, { month: 'Dec', value: 45 },
+    ],
+  },
+  energy: {
+    stats: [
+      { val: '36 kWh', lbl: 'Total Grid' },
+      { val: '0.25 kWh', lbl: 'Avg / Print' },
+      { val: '34 kJ/g', lbl: 'Efficiency' },
+    ],
+    chart: [
+      { month: 'Jan', value: 2.1 }, { month: 'Feb', value: 3.4 }, { month: 'Mar', value: 4.2 },
+      { month: 'Apr', value: 2.8 }, { month: 'May', value: 5.1 }, { month: 'Jun', value: 3.6 },
+      { month: 'Jul', value: 1.9 }, { month: 'Aug', value: 5.8 }, { month: 'Sep', value: 4.0 },
+      { month: 'Oct', value: 3.2 }, { month: 'Nov', value: 2.6 }, { month: 'Dec', value: 4.8 },
+    ],
+  },
+  material: {
+    stats: [
+      { val: '4.64kg', lbl: 'Consumed' },
+      { val: '1', lbl: 'Active Types' },
+      { val: 'PLA', lbl: 'Most Used' },
+    ],
+    chart: [
+      { month: 'Jan', value: 320 }, { month: 'Feb', value: 480 }, { month: 'Mar', value: 550 },
+      { month: 'Apr', value: 390 }, { month: 'May', value: 620 }, { month: 'Jun', value: 410 },
+      { month: 'Jul', value: 280 }, { month: 'Aug', value: 710 }, { month: 'Sep', value: 500 },
+      { month: 'Oct', value: 460 }, { month: 'Nov', value: 380 }, { month: 'Dec', value: 650 },
+    ],
+  },
+  hardware: {
+    stats: [
+      { val: '1', lbl: 'Printers' },
+      { val: '312h', lbl: 'Print Time' },
+      { val: '5–325W', lbl: 'Power Range' },
+    ],
+    chart: [
+      { month: 'Jan', value: 18 }, { month: 'Feb', value: 28 }, { month: 'Mar', value: 35 },
+      { month: 'Apr', value: 22 }, { month: 'May', value: 42 }, { month: 'Jun', value: 30 },
+      { month: 'Jul', value: 15 }, { month: 'Aug', value: 48 }, { month: 'Sep', value: 32 },
+      { month: 'Oct', value: 25 }, { month: 'Nov', value: 20 }, { month: 'Dec', value: 38 },
+    ],
+  },
+};
+
+const ANALYTICS_CAPABILITIES = [
+  { label: 'Cost per print tracking', color: '#34C759' },
+  { label: 'Energy consumption monitoring', color: '#FBBF24' },
+  { label: 'Material usage velocity', color: '#AF52DE' },
+  { label: 'Printer health scores', color: '#007AFF' },
+  { label: 'Spending trend analysis', color: '#FF9500' },
+];
+
+function AnalyticsSection() {
+  const [activeTab, setActiveTab] = useState<string>('economics');
+  const tab = INTEL_TABS.find((t) => t.id === activeTab) || INTEL_TABS[1];
+  const data = INTEL_DATA[activeTab];
+
+  return (
+    <section style={{ padding: '0 24px 140px' }}>
+      <div style={{
+        maxWidth: 1100,
+        margin: '0 auto',
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 440px), 1fr))',
+        gap: 64,
+        alignItems: 'center',
+      }}>
+        {/* Intelligence card */}
+        <ScrollReveal delay={0.1}>
+          <div style={{ position: 'relative' }}>
+            {/* Ambient glow */}
+            <div style={{
+              position: 'absolute',
+              top: -40,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 300,
+              height: 300,
+              borderRadius: '50%',
+              background: `${tab.color}12`,
+              filter: 'blur(80px)',
+              pointerEvents: 'none',
+              transition: 'background 0.5s ease',
+            }} />
+            <div style={{
+              position: 'relative',
+              background: 'rgba(255, 255, 255, 0.03)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
+              borderRadius: RADIUS_XL,
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              padding: 20,
+              boxShadow: `0 8px 32px rgba(0,0,0,0.3), 0 0 60px ${tab.color}10`,
+              transition: 'box-shadow 0.5s ease',
+            }}>
+              {/* Header */}
+              <div style={{ textAlign: 'center', marginBottom: 16 }}>
+                <p style={{
+                  fontSize: 16,
+                  fontWeight: 700,
+                  letterSpacing: '-0.01em',
+                  margin: '0 0 2px',
+                  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+                }}>
+                  Intelligence
+                </p>
+                <p style={{ fontSize: 11, color: TEXT_TERTIARY, margin: 0 }}>Analysis of 143 logs</p>
+              </div>
+
+              {/* Tab bar */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: 4,
+                marginBottom: 16,
+                padding: '4px',
+                borderRadius: 12,
+                background: 'rgba(255,255,255,0.04)',
+              }}>
+                {INTEL_TABS.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setActiveTab(t.id)}
+                    style={{
+                      padding: '6px 12px',
+                      borderRadius: 8,
+                      border: 'none',
+                      fontSize: 10,
+                      fontWeight: 600,
+                      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
+                      letterSpacing: '0.04em',
+                      textTransform: 'uppercase',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      background: activeTab === t.id ? `${t.color}25` : 'transparent',
+                      color: activeTab === t.id ? t.color : TEXT_TERTIARY,
+                    }}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Stats row */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 16 }}>
+                {data.stats.map((s) => (
+                  <div key={s.lbl} style={{
+                    textAlign: 'center',
+                    padding: 12,
+                    borderRadius: 14,
+                    background: 'rgba(255,255,255,0.04)',
+                    border: `1px solid ${tab.color}15`,
+                    transition: 'border-color 0.5s ease',
+                  }}>
+                    <div style={{
+                      fontSize: 18,
+                      fontWeight: 700,
+                      fontFamily: 'ui-monospace, "SF Mono", monospace',
+                      fontVariantNumeric: 'tabular-nums',
+                      color: TEXT_PRIMARY,
+                    }}>
+                      {s.val}
+                    </div>
+                    <div style={{ fontSize: 10, color: TEXT_TERTIARY, marginTop: 4 }}>{s.lbl}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Recharts bar chart */}
+              <div style={{ height: 120 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={data.chart} margin={{ top: 4, right: 4, bottom: 0, left: 4 }}>
+                    <XAxis
+                      dataKey="month"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 9, fill: 'rgba(235,235,245,0.3)' }}
+                      interval={2}
+                    />
+                    <Bar dataKey="value" radius={[3, 3, 0, 0]} animationDuration={600}>
+                      {data.chart.map((_, index) => (
+                        <Cell key={index} fill={tab.color} fillOpacity={0.5 + (index / data.chart.length) * 0.5} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* Text content */}
+        <div>
+          <ScrollReveal>
+            <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: tab.color, marginBottom: 16, transition: 'color 0.5s ease' }}>
+              Intelligence
+            </p>
+            <h2 style={{
+              fontSize: 'clamp(28px, 4vw, 44px)',
+              fontWeight: 700,
+              lineHeight: 1.15,
+              letterSpacing: '-0.02em',
+              marginBottom: 20,
+              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif',
+            }}>
+              Know the true cost of every print.
+            </h2>
+          </ScrollReveal>
+          <ScrollReveal delay={0.08}>
+            <p style={{ fontSize: 17, lineHeight: 1.6, color: TEXT_SECONDARY, marginBottom: 28 }}>
+              Track inventory value, cost per print, and weight usage with
+              decimal precision. Monitor energy costs, material breakdowns,
+              usage trends, and spending patterns — all computed automatically.
+            </p>
+          </ScrollReveal>
+          <ScrollReveal delay={0.14}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {ANALYTICS_CAPABILITIES.map((c) => (
+                <div key={c.label} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: 4,
+                    background: c.color,
+                    flexShrink: 0,
+                  }} />
+                  <span style={{ fontSize: 14, color: TEXT_SECONDARY }}>{c.label}</span>
+                </div>
+              ))}
+            </div>
+          </ScrollReveal>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 /* ------------------------------------------------------------------ */
 /*  Main page                                                          */
@@ -365,7 +641,7 @@ export default function SpoolPage() {
               letterSpacing: '-0.02em',
               fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif',
             }}>
-              2,800+ filaments.{' '}
+              10,000+ filaments.{' '}
               <span style={{ color: ACCENT }}>One tap to add.</span>{' '}
               <span style={{ color: TEXT_TERTIARY }}>Zero data entry.</span>
             </h2>
@@ -378,9 +654,9 @@ export default function SpoolPage() {
               color: TEXT_SECONDARY,
               maxWidth: 600,
             }}>
-              The largest built-in filament database on iOS — Bambu Lab, Prusament,
-              Polymaker, eSUN, Hatchbox, Overture, and dozens more. Brand, material,
-              colour, diameter, and print temperatures included.
+              The largest built-in filament database on iOS — over 10,000 profiles from
+              Bambu Lab, Prusament, Polymaker, eSUN, Hatchbox, Overture, and dozens more.
+              Brand, material, colour, diameter, and print temperatures included.
             </p>
           </ScrollReveal>
         </div>
@@ -460,7 +736,7 @@ export default function SpoolPage() {
                 color: TEXT_TERTIARY,
               }}>
                 <span style={{ opacity: 0.5 }}>⌕</span>
-                Search 2,800+ filaments…
+                Search 10,000+ filaments…
               </div>
               {/* Entries */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -474,14 +750,13 @@ export default function SpoolPage() {
                     background: 'rgba(255,255,255,0.03)',
                     transition: 'background 0.2s',
                   }}>
-                    <div style={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: 16,
-                      background: e.colour,
-                      flexShrink: 0,
-                      boxShadow: `0 0 12px ${e.colour}40`,
-                    }} />
+                    <div style={{ flexShrink: 0 }}>
+                      <FilamentSpool
+                        colors={e.spoolColors}
+                        materialType={e.materialType}
+                        size={36}
+                      />
+                    </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 14, fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{e.name}</div>
                       <div style={{ fontSize: 12, color: TEXT_TERTIARY }}>{e.brand} · {e.weight}</div>
@@ -492,8 +767,8 @@ export default function SpoolPage() {
                       fontSize: 9,
                       fontWeight: 700,
                       fontFamily: 'ui-monospace, "SF Mono", monospace',
-                      background: `${MAT[e.material] || ACCENT}20`,
-                      color: MAT[e.material] || ACCENT,
+                      background: `${ACCENT}20`,
+                      color: ACCENT,
                       letterSpacing: '0.06em',
                     }}>
                       {e.material}
@@ -502,95 +777,15 @@ export default function SpoolPage() {
                 ))}
               </div>
               <p style={{ textAlign: 'center', marginTop: 14, fontSize: 12, color: TEXT_TERTIARY }}>
-                + 2,795 more
+                + 9,995 more
               </p>
             </div>
           </ScrollReveal>
         </div>
       </section>
 
-      {/* ── ANALYTICS ── */}
-      <section style={{ padding: '0 24px 140px' }}>
-        <div style={{
-          maxWidth: 1100,
-          margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 440px), 1fr))',
-          gap: 64,
-          alignItems: 'center',
-        }}>
-          {/* Card mockup first on desktop */}
-          <ScrollReveal delay={0.1}>
-            <div style={{
-              background: BG_CARD,
-              borderRadius: RADIUS_XL,
-              padding: 20,
-              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-            }}>
-              {/* Stats */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 20 }}>
-                {[
-                  { val: '£142.50', lbl: 'Inventory', clr: '#34C759' },
-                  { val: '£0.82',   lbl: 'Per Print', clr: '#FF9500' },
-                  { val: '2.4kg',   lbl: 'This Month', clr: ACCENT },
-                ].map((s) => (
-                  <div key={s.lbl} style={{
-                    textAlign: 'center',
-                    padding: 12,
-                    borderRadius: 14,
-                    background: 'rgba(255,255,255,0.04)',
-                  }}>
-                    <div style={{ fontSize: 18, fontWeight: 700, fontFamily: 'ui-monospace, "SF Mono", monospace' }}>{s.val}</div>
-                    <div style={{ fontSize: 10, color: TEXT_TERTIARY, marginTop: 4 }}>{s.lbl}</div>
-                  </div>
-                ))}
-              </div>
-              {/* Bar chart */}
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 100, padding: '0 4px' }}>
-                {[35, 55, 45, 72, 60, 85, 40, 68, 52, 78, 42, 90].map((h, i) => (
-                  <div key={i} style={{
-                    flex: 1,
-                    height: `${h}%`,
-                    borderRadius: '3px 3px 0 0',
-                    background: `linear-gradient(to top, ${ACCENT}, ${ACCENT}60)`,
-                    opacity: 0.7 + (h / 100) * 0.3,
-                  }} />
-                ))}
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 4px 0', fontSize: 10, color: TEXT_TERTIARY }}>
-                <span>Jan</span>
-                <span>Dec</span>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* Text */}
-          <div>
-            <ScrollReveal>
-              <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: ACCENT, marginBottom: 16 }}>
-                Analytics
-              </p>
-              <h2 style={{
-                fontSize: 'clamp(28px, 4vw, 44px)',
-                fontWeight: 700,
-                lineHeight: 1.15,
-                letterSpacing: '-0.02em',
-                marginBottom: 20,
-                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif',
-              }}>
-                Know the true cost of every print.
-              </h2>
-            </ScrollReveal>
-            <ScrollReveal delay={0.08}>
-              <p style={{ fontSize: 17, lineHeight: 1.6, color: TEXT_SECONDARY }}>
-                Track inventory value, cost per print, and weight usage with
-                decimal precision. Monitor energy costs, material breakdowns,
-                usage trends, and spending patterns — all computed automatically.
-              </p>
-            </ScrollReveal>
-          </div>
-        </div>
-      </section>
+      {/* ── ANALYTICS / INTELLIGENCE ── */}
+      <AnalyticsSection />
 
       {/* ── BAMBU SYNC ── */}
       <section style={{ padding: '0 24px 140px' }}>
@@ -711,7 +906,7 @@ export default function SpoolPage() {
           gap: 24,
         }}>
           {[
-            { value: '2,800+', label: 'Filaments' },
+            { value: '10,000+', label: 'Filaments' },
             { value: '0.1g',   label: 'Precision' },
             { value: '∞',      label: 'iCloud Sync' },
           ].map((s, i) => (

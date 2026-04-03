@@ -6,7 +6,11 @@
         "components": [
           {
             "/": "/t/*",
-            "comment": "Matches any SpoolTag UUID link"
+            "comment": "Matches SpoolTag UUID links"
+          },
+          {
+            "/": "/t",
+            "comment": "Matches App Clip invocation prefix"
           }
         ]
       }

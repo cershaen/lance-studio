@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'motion/react';
+import { motion, useScroll, useTransform, useSpring, AnimatePresence, useInView, animate as motionAnimate, useMotionValue } from 'motion/react';
 import { BarChart, Bar, XAxis, ResponsiveContainer, Cell } from 'recharts';
 import { FilamentSpool } from '../components/spool/FilamentSpool';
 
@@ -53,21 +53,60 @@ function ScrollReveal({
   children,
   delay = 0,
   className = '',
+  blur = true,
 }: {
   children: React.ReactNode;
   delay?: number;
   className?: string;
+  blur?: boolean;
 }) {
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.15 }}
-      transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+      initial={{ opacity: 0, y: 28, filter: blur ? 'blur(10px)' : 'blur(0px)', scale: 0.98 }}
+      whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)', scale: 1 }}
+      viewport={{ once: true, amount: 0.12 }}
+      transition={{ duration: 0.75, delay, ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
     </motion.div>
+  );
+}
+
+/* Count-up number animation */
+function CountUp({ to, suffix = '', prefix = '', duration = 1.8 }: { to: number; suffix?: string; prefix?: string; duration?: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const motionVal = useMotionValue(0);
+  const isInView = useInView(ref, { once: true, margin: '-40px' });
+
+  useEffect(() => {
+    if (!isInView) return;
+    const controls = motionAnimate(motionVal, to, { duration, ease: 'easeOut' });
+    const unsubscribe = motionVal.on('change', (v) => {
+      if (ref.current) ref.current.textContent = prefix + Math.round(v).toLocaleString() + suffix;
+    });
+    return () => { controls.stop(); unsubscribe(); };
+  }, [isInView]);
+
+  return <span ref={ref}>{prefix}0{suffix}</span>;
+}
+
+/* Sharp colored spool circle — replaces blurry WebGL canvas at tiny sizes */
+function SpoolColorCircle({ colors, size = 36 }: { colors: string[]; size?: number }) {
+  const c = colors[0] || '#999';
+  const c2 = colors[1];
+  return (
+    <div style={{
+      width: size,
+      height: size,
+      borderRadius: '50%',
+      background: c2
+        ? `conic-gradient(${c} 0deg, ${c2} 180deg, ${c} 360deg)`
+        : `radial-gradient(circle at 38% 36%, ${c}ff 0%, ${c}99 55%, ${c}44 100%)`,
+      border: `1.5px solid ${c}55`,
+      boxShadow: `0 0 ${size * 0.4}px ${c}35`,
+      flexShrink: 0,
+    }} />
   );
 }
 
@@ -124,8 +163,8 @@ const FEATURES = [
     color: '#AF52DE',
   },
   {
-    title: 'Printer Management',
-    desc: 'Track all your printers. Log maintenance, monitor total print hours, and set service reminders before things break.',
+    title: 'Quality Ratings',
+    desc: 'Rate every print with a single tap. Track which spools, materials, and settings produce your best results over time.',
     color: '#FF3B30',
   },
   {
@@ -499,10 +538,29 @@ export default function SpoolPage() {
   useEffect(() => { document.title = 'Spool — Filament Tracker for 3D Printers'; }, []);
 
   return (
-    <div style={{ background: BG_PRIMARY, color: TEXT_PRIMARY, minHeight: '100vh' }}>
+    <div style={{ background: BG_PRIMARY, color: TEXT_PRIMARY, minHeight: '100vh', overflowX: 'hidden' }}>
+
+      {/* ── AMBIENT ORBS — scroll-reactive background ── */}
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
+        <motion.div
+          animate={{ scale: [1, 1.2, 1], opacity: [0.06, 0.1, 0.06], x: [0, 40, 0], y: [0, -30, 0] }}
+          transition={{ repeat: Infinity, duration: 12, ease: 'easeInOut' }}
+          style={{ position: 'absolute', top: '-20%', left: '-10%', width: '60vw', height: '60vw', borderRadius: '50%', background: `radial-gradient(circle, ${ACCENT}, transparent 70%)` }}
+        />
+        <motion.div
+          animate={{ scale: [1, 1.15, 1], opacity: [0.04, 0.08, 0.04], x: [0, -50, 0], y: [0, 40, 0] }}
+          transition={{ repeat: Infinity, duration: 16, ease: 'easeInOut', delay: 4 }}
+          style={{ position: 'absolute', bottom: '10%', right: '-15%', width: '50vw', height: '50vw', borderRadius: '50%', background: 'radial-gradient(circle, #AF52DE, transparent 70%)' }}
+        />
+        <motion.div
+          animate={{ scale: [1, 1.1, 1], opacity: [0.03, 0.06, 0.03] }}
+          transition={{ repeat: Infinity, duration: 20, ease: 'easeInOut', delay: 8 }}
+          style={{ position: 'absolute', top: '40%', left: '40%', width: '40vw', height: '40vw', borderRadius: '50%', background: 'radial-gradient(circle, #34C759, transparent 70%)' }}
+        />
+      </div>
 
       {/* ── NAV ── */}
-      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'rgba(13,13,13,0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, isolation: 'isolate', background: 'rgba(13,13,13,0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px', height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <img src="/spool-tracker-logo.png" alt="Spool" style={{ width: 28, height: 28, borderRadius: 8 }} />
@@ -645,9 +703,7 @@ export default function SpoolPage() {
                       whileHover={{ background: 'rgba(255,255,255,0.06)' }}
                       style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 14, background: 'rgba(255,255,255,0.03)' }}
                     >
-                      <div style={{ flexShrink: 0 }}>
-                        <FilamentSpool colors={e.spoolColors} materialType={e.materialType} size={36} />
-                      </div>
+                      <SpoolColorCircle colors={e.spoolColors} size={36} />
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: 14, fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{e.name}</div>
                         <div style={{ fontSize: 12, color: TEXT_TERTIARY }}>{e.brand} · {e.weight}</div>
@@ -776,7 +832,7 @@ export default function SpoolPage() {
                 <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: RADIUS_MD, padding: '12px 16px', border: '1px solid rgba(255,255,255,0.06)', textAlign: 'left' }}>
                   <div style={{ fontSize: 10, color: TEXT_TERTIARY, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>When scanned</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <FilamentSpool colors={['#4CAF50']} materialType={20} size={32} />
+                    <SpoolColorCircle colors={['#4CAF50']} size={32} />
                     <div>
                       <div style={{ fontSize: 13, fontWeight: 600, color: TEXT_PRIMARY }}>Grass Green · PLA Matte</div>
                       <div style={{ fontSize: 11, color: TEXT_TERTIARY }}>Bambu Lab · 847g remaining</div>
@@ -838,12 +894,12 @@ export default function SpoolPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))', gap: 16 }}>
             {FEATURES.map((f, i) => (
               <motion.div key={f.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.55, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
-                whileHover={{ y: -4, scale: 1.01 }}
-                style={{ background: BG_CARD, borderRadius: RADIUS_LG, padding: 24, boxShadow: '0 4px 16px rgba(0,0,0,0.2)', borderTop: `2px solid ${f.color}35` }}
+                initial={{ opacity: 0, y: 24, scale: 0.96, filter: 'blur(8px)' }}
+                whileInView={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+                viewport={{ once: true, amount: 0.1 }}
+                transition={{ duration: 0.6, delay: i * 0.07, ease: [0.22, 1, 0.36, 1] }}
+                whileHover={{ y: -5, scale: 1.02, boxShadow: `0 12px 32px rgba(0,0,0,0.35), 0 0 0 1px ${f.color}20` }}
+                style={{ background: BG_CARD, borderRadius: RADIUS_LG, padding: 24, boxShadow: '0 4px 16px rgba(0,0,0,0.2)', borderTop: `2px solid ${f.color}35`, cursor: 'default' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
                   <div style={{ width: 8, height: 8, borderRadius: 4, background: f.color, flexShrink: 0 }} />
@@ -860,52 +916,59 @@ export default function SpoolPage() {
       <section style={{ padding: '0 24px 140px' }}>
         <div style={{ maxWidth: 800, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
           {[
-            { value: '10,000+', label: 'Filament Profiles' },
-            { value: '0.1g',    label: 'Weight Precision' },
-            { value: 'iCloud',  label: 'Sync Included' },
+            { countTo: 10000, suffix: '+', label: 'Filament Profiles', color: ACCENT },
+            { countTo: 218,   suffix: '',  label: 'Prints Logged',     color: '#34C759' },
+            { countTo: 4,     suffix: '',  label: 'Printers Supported', color: '#FF9500' },
           ].map((s, i) => (
             <motion.div key={s.label}
-              initial={{ opacity: 0, scale: 0.92 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, scale: 0.9, filter: 'blur(10px)' }}
+              whileInView={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
               viewport={{ once: true }}
-              transition={{ duration: 0.55, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-              whileHover={{ scale: 1.03 }}
-              style={{ textAlign: 'center', padding: '32px 16px', background: 'rgba(255,255,255,0.02)', borderRadius: RADIUS_LG, border: '1px solid rgba(255,255,255,0.05)' }}
+              transition={{ duration: 0.65, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+              whileHover={{ scale: 1.04, background: 'rgba(255,255,255,0.04)' }}
+              style={{ textAlign: 'center', padding: '36px 16px', background: 'rgba(255,255,255,0.02)', borderRadius: RADIUS_LG, border: '1px solid rgba(255,255,255,0.06)', cursor: 'default' }}
             >
-              <div style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 700, fontFamily: 'ui-monospace, "SF Mono", monospace', marginBottom: 8 }}>{s.value}</div>
+              <div style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 700, fontFamily: 'ui-monospace, "SF Mono", monospace', marginBottom: 8, color: s.color }}>
+                <CountUp to={s.countTo} suffix={s.suffix} duration={1.8} />
+              </div>
               <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: TEXT_TERTIARY }}>{s.label}</div>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* ── FILAMENT SHOWCASE ── */}
-      <section style={{ padding: '0 24px 140px' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+      {/* ── FILAMENT SHOWCASE — continuous marquee ── */}
+      <section style={{ padding: '0 0 140px', overflow: 'hidden' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px' }}>
           <ScrollReveal>
-            <div style={{ textAlign: 'center', marginBottom: 48 }}>
+            <div style={{ textAlign: 'center', marginBottom: 56 }}>
               <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: ACCENT, marginBottom: 16 }}>Premium Visuals</p>
               <h2 style={{ fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 700, letterSpacing: '-0.02em', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif' }}>Every material, rendered.</h2>
-              <p style={{ fontSize: 17, color: TEXT_TERTIARY, marginTop: 8 }}>Procedural shaders bring your filaments to life.</p>
+              <p style={{ fontSize: 17, color: TEXT_TERTIARY, marginTop: 8 }}>21 material types. Procedural shaders. Looks nothing like a list.</p>
             </div>
           </ScrollReveal>
-          <ScrollReveal delay={0.1}>
-            <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 32 }}>
-              {SPOOL_SHOWCASE.map((s, i) => (
-                <motion.div key={s.label}
-                  initial={{ opacity: 0, scale: 0.85 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.55, delay: i * 0.07, ease: [0.22, 1, 0.36, 1] }}
-                  whileHover={{ scale: 1.1 }}
-                  style={{ textAlign: 'center', cursor: 'default' }}
-                >
-                  <FilamentSpool colors={s.colors} materialType={s.materialType} size={120} animated={s.animated} />
-                  <p style={{ fontSize: 12, fontWeight: 500, color: TEXT_TERTIARY, marginTop: 10, letterSpacing: '0.04em' }}>{s.label}</p>
-                </motion.div>
-              ))}
-            </div>
-          </ScrollReveal>
+        </div>
+        {/* Marquee track */}
+        <div style={{ position: 'relative' }}>
+          <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 140, background: `linear-gradient(to right, ${BG_PRIMARY}, transparent)`, zIndex: 1, pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 140, background: `linear-gradient(to left, ${BG_PRIMARY}, transparent)`, zIndex: 1, pointerEvents: 'none' }} />
+          <motion.div
+            animate={{ x: ['0%', '-50%'] }}
+            transition={{ repeat: Infinity, duration: 26, ease: 'linear' }}
+            style={{ display: 'flex', gap: 56, width: 'max-content', padding: '16px 28px' }}
+          >
+            {[...SPOOL_SHOWCASE, ...SPOOL_SHOWCASE].map((s, i) => (
+              <motion.div
+                key={i}
+                whileHover={{ scale: 1.14, y: -10 }}
+                transition={SPRING}
+                style={{ textAlign: 'center', cursor: 'default', flexShrink: 0 }}
+              >
+                <FilamentSpool colors={s.colors} materialType={s.materialType} size={120} animated={s.animated} />
+                <p style={{ fontSize: 12, fontWeight: 500, color: TEXT_TERTIARY, marginTop: 12, letterSpacing: '0.04em' }}>{s.label}</p>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 

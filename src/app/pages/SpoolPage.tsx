@@ -5,38 +5,30 @@ import { BarChart, Bar, XAxis, ResponsiveContainer, Cell } from 'recharts';
 import { FilamentSpool } from '../components/spool/FilamentSpool';
 
 /* ------------------------------------------------------------------ */
-/*  Spool design system tokens (from SPOOL_DESIGN_SYSTEM.md)           */
+/*  Spool design system tokens                                         */
 /* ------------------------------------------------------------------ */
 
-// Backgrounds
 const BG_PRIMARY = 'rgb(13, 13, 13)';
 const BG_CARD = 'rgb(38, 38, 43)';
-
-// Accent — iOS system blue, the ONLY brand colour
 const ACCENT = '#007AFF';
-
-// Text
 const TEXT_PRIMARY = '#ffffff';
-const TEXT_SECONDARY = 'rgba(235, 235, 245, 0.6)';  // iOS secondaryLabel
-const TEXT_TERTIARY = 'rgba(235, 235, 245, 0.3)';   // iOS tertiaryLabel
+const TEXT_SECONDARY = 'rgba(235, 235, 245, 0.6)';
+const TEXT_TERTIARY = 'rgba(235, 235, 245, 0.3)';
 
-// Material palette
 const MAT: Record<string, string> = {
-  PLA:  '#34C759', // iOS green
-  PETG: '#FF9500', // iOS orange
-  ABS:  '#007AFF', // iOS blue
-  TPU:  '#AF52DE', // iOS purple
+  PLA:  '#34C759',
+  PETG: '#FF9500',
+  ABS:  '#007AFF',
+  TPU:  '#AF52DE',
   'PLA+': '#34C759',
   Nylon: '#8E8E93',
-  ASA:  '#FF3B30', // iOS red
+  ASA:  '#FF3B30',
 };
 
-// Corner radius (design system)
 const RADIUS_MD = 16;
 const RADIUS_LG = 20;
 const RADIUS_XL = 24;
 
-// App Store
 const APP_STORE = 'https://apps.apple.com/gb/app/spool/id6756892049';
 
 /* ------------------------------------------------------------------ */
@@ -51,7 +43,7 @@ function AppleLogo({ size = 20 }: { size?: number }) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  ScrollReveal — content fades/slides IN and STAYS. Never disappears */
+/*  ScrollReveal — fades/slides in and stays                           */
 /* ------------------------------------------------------------------ */
 function ScrollReveal({
   children,
@@ -83,6 +75,18 @@ function ScrollReveal({
 }
 
 /* ------------------------------------------------------------------ */
+/*  Checkmark icon                                                     */
+/* ------------------------------------------------------------------ */
+function Check({ color }: { color: string }) {
+  return (
+    <svg width={16} height={16} viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
+      <circle cx={8} cy={8} r={8} fill={`${color}20`} />
+      <path d="M5 8l2 2 4-4" stroke={color} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Data                                                               */
 /* ------------------------------------------------------------------ */
 const DATABASE_ENTRIES = [
@@ -95,28 +99,34 @@ const DATABASE_ENTRIES = [
 
 const FEATURES = [
   {
-    title: 'Printer Management',
-    desc: 'Track all your 3D printers. Log maintenance, monitor print hours, set service reminders.',
-  },
-  {
-    title: 'SpoolTag',
-    desc: 'Print QR labels or write NFC tags. Scan with your phone to see every detail instantly.',
-  },
-  {
-    title: 'iCloud Sync',
-    desc: 'Seamless sync across iPhone and iPad. No accounts, no sign-ups. Apple-native privacy.',
-  },
-  {
     title: 'Smart Inventory',
-    desc: 'Low stock alerts, colour search, material filtering, storage tracking. Find any spool in seconds.',
+    desc: 'Colour search, material filtering, low-stock alerts. Find any spool in seconds across your entire collection.',
+    color: ACCENT,
+  },
+  {
+    title: 'Categories',
+    desc: 'Organise spools exactly how you think — by project, printer, storage location, or material type. Fully customisable.',
+    color: '#34C759',
   },
   {
     title: 'Cost & Energy',
-    desc: 'True printing costs. Electricity calculated from wattage and duration. Price-per-gram breakdowns.',
+    desc: 'True printing costs. Electricity calculated from wattage and duration. Price-per-gram, total spend, and inventory value.',
+    color: '#FF9500',
   },
   {
     title: 'Print History',
-    desc: 'Full logging — spool, weight, duration, notes. Automatic for Bambu. Quick entry for everyone else.',
+    desc: 'Full logging — spool, weight, duration, quality, notes. Auto-imported from Bambu. Quick entry for every other printer.',
+    color: '#AF52DE',
+  },
+  {
+    title: 'Printer Management',
+    desc: 'Track all your printers. Log maintenance, monitor total print hours, and set service reminders before things break.',
+    color: '#FF3B30',
+  },
+  {
+    title: 'iCloud Sync',
+    desc: 'Seamless sync across every iPhone and iPad you own. No accounts, no sign-ups. Apple-native privacy, always.',
+    color: '#8E8E93',
   },
 ];
 
@@ -124,28 +134,68 @@ const BAMBU_PRINTERS = ['X1 Carbon', 'P1S', 'A1', 'A1 Mini'];
 
 const TESTIMONIALS = [
   {
-    quote: 'The most feature-complete filament management app on any platform.',
-    attribution: 'Independent review',
+    quote: "I thought it would just measure filament, but it does so much more — cost per print, Bambu Cloud integration, adding prints with a single tap. It honestly feels like it was designed by Apple themselves. Keep making apps like this!",
+    attribution: 'App Store review',
+    stars: 5,
     featured: true,
   },
   {
-    quote: "I thought it would just measure filament, but it does so much more — cost per print, Bambu Cloud integration, adding prints with a single tap. It honestly feels like it was designed by Apple themselves. Keep making apps like this!",
-    attribution: 'Spool user',
+    quote: 'The most feature-complete filament management app on any platform.',
+    attribution: 'Independent review',
+    stars: 5,
     featured: false,
   },
   {
-    quote: 'Wow, this is amazing so far.',
-    attribution: 'Spool user',
+    quote: 'Finally an app that actually tracks what I care about — weight remaining, cost per print, energy usage. Everything in one place.',
+    attribution: 'App Store review',
+    stars: 5,
     featured: false,
   },
 ];
 
+const PLANS = [
+  {
+    name: 'Free',
+    price: 'Free',
+    priceSub: 'forever',
+    features: [
+      'Up to 10 spools',
+      '10,000+ filament database',
+      'iCloud sync across devices',
+      'Print history logging',
+      'Cost & energy tracking',
+      'Categories & organisation',
+    ],
+    cta: 'Download Free',
+    ctaHref: APP_STORE,
+    accent: false,
+    badge: null as string | null,
+  },
+  {
+    name: 'Pro',
+    price: '£4.99',
+    priceSub: '/month · or £49.99/year',
+    features: [
+      'Unlimited spools',
+      'Everything in Free',
+      'Bambu Cloud auto-sync',
+      'SpoolTag — NFC & QR labels',
+      'Advanced analytics intelligence',
+      'Multiple printer management',
+    ],
+    cta: 'Get Pro',
+    ctaHref: APP_STORE,
+    accent: true,
+    badge: 'Most Popular' as string | null,
+  },
+];
+
 const SPOOL_SHOWCASE = [
-  { colors: ['#FF6B35'], materialType: 0, label: 'PLA' },
-  { colors: ['#1E3A5F'], materialType: 3, label: 'Silk' },
-  { colors: ['#2D1B69'], materialType: 1, label: 'Galaxy', animated: true },
-  { colors: ['#CC3333'], materialType: 2, label: 'Carbon Fiber' },
-  { colors: ['#FF8C00'], materialType: 5, label: 'PETG' },
+  { colors: ['#FF6B35'], materialType: 0,  label: 'PLA' },
+  { colors: ['#1E3A5F'], materialType: 3,  label: 'Silk' },
+  { colors: ['#2D1B69'], materialType: 1,  label: 'Galaxy', animated: true },
+  { colors: ['#CC3333'], materialType: 2,  label: 'Carbon Fiber' },
+  { colors: ['#FF8C00'], materialType: 5,  label: 'PETG' },
   { colors: ['#4CAF50', '#2196F3'], materialType: 7, label: 'Rainbow' },
 ];
 
@@ -232,11 +282,11 @@ const INTEL_DATA: Record<string, {
 };
 
 const ANALYTICS_CAPABILITIES = [
-  { label: 'Cost per print tracking', color: '#34C759' },
-  { label: 'Energy consumption monitoring', color: '#FBBF24' },
-  { label: 'Material usage velocity', color: '#AF52DE' },
-  { label: 'Printer health scores', color: '#007AFF' },
-  { label: 'Spending trend analysis', color: '#FF9500' },
+  { label: 'Cost per print with decimal precision', color: '#34C759' },
+  { label: 'Energy & kWh tracking per printer', color: '#FBBF24' },
+  { label: 'Material usage velocity over time', color: '#AF52DE' },
+  { label: 'Inventory value & spend trends', color: '#FF9500' },
+  { label: 'Printer health & total print hours', color: '#007AFF' },
 ];
 
 function AnalyticsSection() {
@@ -257,7 +307,6 @@ function AnalyticsSection() {
         {/* Intelligence card */}
         <ScrollReveal delay={0.1}>
           <div style={{ position: 'relative' }}>
-            {/* Ambient glow */}
             <div style={{
               position: 'absolute',
               top: -40,
@@ -282,7 +331,6 @@ function AnalyticsSection() {
               boxShadow: `0 8px 32px rgba(0,0,0,0.3), 0 0 60px ${tab.color}10`,
               transition: 'box-shadow 0.5s ease',
             }}>
-              {/* Header */}
               <div style={{ textAlign: 'center', marginBottom: 16 }}>
                 <p style={{
                   fontSize: 16,
@@ -296,7 +344,6 @@ function AnalyticsSection() {
                 <p style={{ fontSize: 11, color: TEXT_TERTIARY, margin: 0 }}>Analysis of 143 logs</p>
               </div>
 
-              {/* Tab bar */}
               <div style={{
                 display: 'flex',
                 justifyContent: 'center',
@@ -330,7 +377,6 @@ function AnalyticsSection() {
                 ))}
               </div>
 
-              {/* Stats row */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 16 }}>
                 {data.stats.map((s) => (
                   <div key={s.lbl} style={{
@@ -355,7 +401,6 @@ function AnalyticsSection() {
                 ))}
               </div>
 
-              {/* Recharts bar chart */}
               <div style={{ height: 120 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={data.chart} margin={{ top: 4, right: 4, bottom: 0, left: 4 }}>
@@ -378,7 +423,7 @@ function AnalyticsSection() {
           </div>
         </ScrollReveal>
 
-        {/* Text content */}
+        {/* Text */}
         <div>
           <ScrollReveal>
             <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: tab.color, marginBottom: 16, transition: 'color 0.5s ease' }}>
@@ -397,22 +442,15 @@ function AnalyticsSection() {
           </ScrollReveal>
           <ScrollReveal delay={0.08}>
             <p style={{ fontSize: 17, lineHeight: 1.6, color: TEXT_SECONDARY, marginBottom: 28 }}>
-              Track inventory value, cost per print, and weight usage with
-              decimal precision. Monitor energy costs, material breakdowns,
-              usage trends, and spending patterns — all computed automatically.
+              Most makers guess. Spool calculates. Track inventory value, cost per print,
+              and weight consumed with decimal precision — automatically, every time you log a print.
             </p>
           </ScrollReveal>
           <ScrollReveal delay={0.14}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {ANALYTICS_CAPABILITIES.map((c) => (
                 <div key={c.label} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: 4,
-                    background: c.color,
-                    flexShrink: 0,
-                  }} />
+                  <div style={{ width: 8, height: 8, borderRadius: 4, background: c.color, flexShrink: 0 }} />
                   <span style={{ fontSize: 14, color: TEXT_SECONDARY }}>{c.label}</span>
                 </div>
               ))}
@@ -436,77 +474,55 @@ export default function SpoolPage() {
   const heroOpacity = useTransform(heroScroll, [0, 0.6], [1, 0]);
   const heroY = useTransform(heroScroll, [0, 0.6], [0, -80]);
 
-  // Progress bar
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 40, damping: 20 });
   const progressWidth = useTransform(progress, [0, 1], ['0%', '100%']);
 
   useEffect(() => {
-    document.title = 'Spool — Track Every Gram';
+    document.title = 'Spool — Filament Tracker for 3D Printers';
   }, []);
 
   return (
     <div style={{ background: BG_PRIMARY, color: TEXT_PRIMARY, minHeight: '100vh' }}>
 
       {/* ── NAV ── */}
-      <nav
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 50,
-          background: 'rgba(13, 13, 13, 0.85)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
-        }}
-      >
+      <nav style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
+        background: 'rgba(13, 13, 13, 0.85)',
+        backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(255,255,255,0.06)',
+      }}>
         <div style={{
-          maxWidth: 1100,
-          margin: '0 auto',
-          padding: '0 24px',
-          height: 52,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
+          maxWidth: 1100, margin: '0 auto', padding: '0 24px', height: 52,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <img
-              src="/spool-tracker-logo.png"
-              alt="Spool"
-              style={{ width: 28, height: 28, borderRadius: 8 }}
-            />
-            <span style={{
-              fontSize: 15,
-              fontWeight: 600,
-              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif',
-              letterSpacing: '-0.01em',
-            }}>
+            <img src="/spool-tracker-logo.png" alt="Spool" style={{ width: 28, height: 28, borderRadius: 8 }} />
+            <span style={{ fontSize: 15, fontWeight: 600, fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif', letterSpacing: '-0.01em' }}>
               Spool
             </span>
           </div>
-          <a
-            href={APP_STORE}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '8px 18px',
-              borderRadius: 999,
-              background: ACCENT,
-              color: '#fff',
-              fontSize: 13,
-              fontWeight: 600,
-              textDecoration: 'none',
-              transition: 'opacity 0.2s',
-            }}
-          >
-            <AppleLogo size={14} />
-            Download
-          </a>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+            <a
+              href="#features"
+              onClick={(e) => { e.preventDefault(); document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' }); }}
+              style={{ fontSize: 13, color: TEXT_SECONDARY, textDecoration: 'none' }}
+            >
+              Features
+            </a>
+            <a
+              href="#pricing"
+              onClick={(e) => { e.preventDefault(); document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }); }}
+              style={{ fontSize: 13, color: TEXT_SECONDARY, textDecoration: 'none' }}
+            >
+              Pricing
+            </a>
+            <a href={APP_STORE} target="_blank" rel="noopener noreferrer"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', borderRadius: 999, background: ACCENT, color: '#fff', fontSize: 13, fontWeight: 600, textDecoration: 'none', transition: 'opacity 0.2s' }}>
+              <AppleLogo size={14} />
+              Download
+            </a>
+          </div>
         </div>
         <motion.div style={{ height: 2, background: ACCENT, width: progressWidth }} />
       </nav>
@@ -514,115 +530,85 @@ export default function SpoolPage() {
       {/* ── HERO ── */}
       <motion.section
         ref={heroRef}
-        style={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '80px 24px 40px',
-          opacity: heroOpacity,
-          y: heroY,
-        }}
+        style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '80px 24px 40px', opacity: heroOpacity, y: heroY }}
       >
         <div style={{ maxWidth: 680, textAlign: 'center' }}>
+
+          {/* iOS 26 badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            style={{ marginBottom: 32 }}
+          >
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '6px 16px', borderRadius: 999,
+              background: 'rgba(0, 122, 255, 0.1)',
+              border: '1px solid rgba(0, 122, 255, 0.25)',
+            }}>
+              <div style={{ width: 6, height: 6, borderRadius: 3, background: ACCENT }} />
+              <span style={{ fontSize: 11, fontWeight: 700, color: ACCENT, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                Built for iOS 26
+              </span>
+            </div>
+          </motion.div>
+
           {/* App icon */}
           <motion.div
             initial={{ opacity: 0, scale: 0.85 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
             style={{ marginBottom: 40 }}
           >
             <img
               src="/spool-tracker-logo.png"
               alt="Spool"
-              style={{
-                width: 120,
-                height: 120,
-                borderRadius: 28,
-                boxShadow: `0 0 80px ${ACCENT}25, 0 20px 60px rgba(0,0,0,0.5)`,
-                margin: '0 auto',
-                display: 'block',
-              }}
+              style={{ width: 120, height: 120, borderRadius: 28, boxShadow: `0 0 80px ${ACCENT}25, 0 20px 60px rgba(0,0,0,0.5)`, margin: '0 auto', display: 'block' }}
             />
           </motion.div>
 
-          {/* Headline */}
           <motion.h1
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
-            style={{
-              fontSize: 'clamp(40px, 8vw, 72px)',
-              fontWeight: 700,
-              lineHeight: 1.05,
-              letterSpacing: '-0.03em',
-              margin: '0 0 20px',
-              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif',
-            }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+            style={{ fontSize: 'clamp(40px, 8vw, 72px)', fontWeight: 700, lineHeight: 1.05, letterSpacing: '-0.03em', margin: '0 0 20px', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif' }}
           >
             Track every gram.
           </motion.h1>
 
-          {/* Subtitle */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
-            style={{
-              fontSize: 'clamp(17px, 2.5vw, 21px)',
-              color: TEXT_SECONDARY,
-              lineHeight: 1.5,
-              maxWidth: 480,
-              margin: '0 auto 48px',
-              fontWeight: 400,
-            }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.32 }}
+            style={{ fontSize: 'clamp(17px, 2.5vw, 21px)', color: TEXT_SECONDARY, lineHeight: 1.5, maxWidth: 500, margin: '0 auto 48px', fontWeight: 400 }}
           >
-            The complete filament management system for 3D printing. Built for precision. Designed for makers.
+            The filament manager serious makers actually use. 10,000+ profiles built-in, true cost tracking, and automatic Bambu Cloud sync.
           </motion.p>
 
-          {/* CTA */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.45 }}
-            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}
           >
             <a
               href={APP_STORE}
               target="_blank"
               rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 12,
-                padding: '16px 32px',
-                borderRadius: RADIUS_MD,
-                background: ACCENT,
-                color: '#fff',
-                fontSize: 16,
-                fontWeight: 600,
-                textDecoration: 'none',
-                boxShadow: `0 4px 24px ${ACCENT}40`,
-                transition: 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
-              }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: '16px 32px', borderRadius: RADIUS_MD, background: ACCENT, color: '#fff', fontSize: 16, fontWeight: 600, textDecoration: 'none', boxShadow: `0 4px 24px ${ACCENT}40`, transition: 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)' }}
             >
               <AppleLogo size={22} />
               <span>Download on the App Store</span>
             </a>
-            <p style={{ fontSize: 14, color: TEXT_SECONDARY, margin: 0 }}>
-              Free to download · <span style={{ color: TEXT_TERTIARY }}>Pro tier for power users</span>
+            <p style={{ fontSize: 13, color: TEXT_TERTIARY, margin: 0 }}>
+              Free to download
+              <span style={{ color: 'rgba(255,255,255,0.12)', margin: '0 8px' }}>·</span>
+              <span style={{ color: TEXT_SECONDARY }}>Pro from £4.99/month</span>
             </p>
             <button
               onClick={() => document.getElementById('statement')?.scrollIntoView({ behavior: 'smooth' })}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: TEXT_TERTIARY,
-                fontSize: 14,
-                cursor: 'pointer',
-                padding: '8px 16px',
-                fontFamily: 'inherit',
-              }}
+              style={{ background: 'none', border: 'none', color: TEXT_TERTIARY, fontSize: 14, cursor: 'pointer', padding: '8px 16px', fontFamily: 'inherit', marginTop: 4 }}
             >
               Scroll to explore ↓
             </button>
@@ -634,29 +620,15 @@ export default function SpoolPage() {
       <section id="statement" style={{ padding: '120px 24px 140px' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
           <ScrollReveal>
-            <h2 style={{
-              fontSize: 'clamp(32px, 6vw, 60px)',
-              fontWeight: 700,
-              lineHeight: 1.1,
-              letterSpacing: '-0.02em',
-              fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif',
-            }}>
+            <h2 style={{ fontSize: 'clamp(32px, 6vw, 60px)', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.02em', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif' }}>
               10,000+ filaments.{' '}
               <span style={{ color: ACCENT }}>One tap to add.</span>{' '}
               <span style={{ color: TEXT_TERTIARY }}>Zero data entry.</span>
             </h2>
           </ScrollReveal>
           <ScrollReveal delay={0.1}>
-            <p style={{
-              marginTop: 28,
-              fontSize: 18,
-              lineHeight: 1.65,
-              color: TEXT_SECONDARY,
-              maxWidth: 600,
-            }}>
-              The largest built-in filament database on iOS — over 10,000 profiles from
-              Bambu Lab, Prusament, Polymaker, eSUN, Hatchbox, Overture, and dozens more.
-              Brand, material, colour, diameter, and print temperatures included.
+            <p style={{ marginTop: 28, fontSize: 18, lineHeight: 1.65, color: TEXT_SECONDARY, maxWidth: 600 }}>
+              The largest built-in filament database on iOS — over 10,000 profiles from Bambu Lab, Prusament, Polymaker, eSUN, Hatchbox, Overture, and dozens more. Brand, material, colour, diameter, and print temperatures included. Just search and tap.
             </p>
           </ScrollReveal>
         </div>
@@ -664,121 +636,50 @@ export default function SpoolPage() {
 
       {/* ── DATABASE ── */}
       <section style={{ padding: '0 24px 140px' }}>
-        <div style={{
-          maxWidth: 1100,
-          margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 440px), 1fr))',
-          gap: 64,
-          alignItems: 'center',
-        }}>
-          {/* Text */}
+        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 440px), 1fr))', gap: 64, alignItems: 'center' }}>
           <div>
             <ScrollReveal>
-              <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: ACCENT, marginBottom: 16 }}>
-                The Database
-              </p>
-              <h2 style={{
-                fontSize: 'clamp(28px, 4vw, 44px)',
-                fontWeight: 700,
-                lineHeight: 1.15,
-                letterSpacing: '-0.02em',
-                marginBottom: 20,
-                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif',
-              }}>
-                Browse. Tap. Done.
-              </h2>
+              <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: ACCENT, marginBottom: 16 }}>The Database</p>
+              <h2 style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 700, lineHeight: 1.15, letterSpacing: '-0.02em', marginBottom: 20, fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif' }}>Browse. Tap. Done.</h2>
             </ScrollReveal>
             <ScrollReveal delay={0.08}>
               <p style={{ fontSize: 17, lineHeight: 1.6, color: TEXT_SECONDARY, marginBottom: 28 }}>
-                Search by name, brand, material, or colour. Each entry includes hex colour
-                preview, temperatures, diameter, and brand. Tap to add to your collection.
+                Search by name, brand, material, or colour. Each entry includes hex colour preview, temperatures, diameter, and brand. No typing required — find your filament and tap to add it.
               </p>
             </ScrollReveal>
             <ScrollReveal delay={0.14}>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {['PLA', 'PETG', 'ABS', 'TPU', 'ASA', 'Nylon'].map((m) => (
-                  <span key={m} style={{
-                    padding: '5px 12px',
-                    borderRadius: 999,
-                    fontSize: 11,
-                    fontWeight: 700,
-                    fontFamily: 'ui-monospace, "SF Mono", monospace',
-                    letterSpacing: '0.05em',
-                    background: `${MAT[m] || ACCENT}18`,
-                    color: MAT[m] || ACCENT,
-                  }}>
+                  <span key={m} style={{ padding: '5px 12px', borderRadius: 999, fontSize: 11, fontWeight: 700, fontFamily: 'ui-monospace, "SF Mono", monospace', letterSpacing: '0.05em', background: `${MAT[m] || ACCENT}18`, color: MAT[m] || ACCENT }}>
                     {m}
                   </span>
                 ))}
               </div>
             </ScrollReveal>
           </div>
-
-          {/* Card mockup — solid card, NOT glass */}
           <ScrollReveal delay={0.1}>
-            <div style={{
-              background: BG_CARD,
-              borderRadius: RADIUS_XL,
-              padding: 20,
-              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-            }}>
-              {/* Search */}
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                padding: '10px 14px',
-                borderRadius: 12,
-                background: 'rgba(255,255,255,0.06)',
-                marginBottom: 12,
-                fontSize: 14,
-                color: TEXT_TERTIARY,
-              }}>
+            <div style={{ background: BG_CARD, borderRadius: RADIUS_XL, padding: 20, boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 12, background: 'rgba(255,255,255,0.06)', marginBottom: 12, fontSize: 14, color: TEXT_TERTIARY }}>
                 <span style={{ opacity: 0.5 }}>⌕</span>
                 Search 10,000+ filaments…
               </div>
-              {/* Entries */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {DATABASE_ENTRIES.map((e, i) => (
-                  <div key={i} style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 12,
-                    padding: '10px 12px',
-                    borderRadius: 14,
-                    background: 'rgba(255,255,255,0.03)',
-                    transition: 'background 0.2s',
-                  }}>
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 14, background: 'rgba(255,255,255,0.03)' }}>
                     <div style={{ flexShrink: 0 }}>
-                      <FilamentSpool
-                        colors={e.spoolColors}
-                        materialType={e.materialType}
-                        size={36}
-                      />
+                      <FilamentSpool colors={e.spoolColors} materialType={e.materialType} size={36} />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 14, fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{e.name}</div>
                       <div style={{ fontSize: 12, color: TEXT_TERTIARY }}>{e.brand} · {e.weight}</div>
                     </div>
-                    <span style={{
-                      padding: '3px 8px',
-                      borderRadius: 999,
-                      fontSize: 9,
-                      fontWeight: 700,
-                      fontFamily: 'ui-monospace, "SF Mono", monospace',
-                      background: `${ACCENT}20`,
-                      color: ACCENT,
-                      letterSpacing: '0.06em',
-                    }}>
+                    <span style={{ padding: '3px 8px', borderRadius: 999, fontSize: 9, fontWeight: 700, fontFamily: 'ui-monospace, "SF Mono", monospace', background: `${ACCENT}20`, color: ACCENT, letterSpacing: '0.06em' }}>
                       {e.material}
                     </span>
                   </div>
                 ))}
               </div>
-              <p style={{ textAlign: 'center', marginTop: 14, fontSize: 12, color: TEXT_TERTIARY }}>
-                + 9,995 more
-              </p>
+              <p style={{ textAlign: 'center', marginTop: 14, fontSize: 12, color: TEXT_TERTIARY }}>+ 9,995 more</p>
             </div>
           </ScrollReveal>
         </div>
@@ -791,103 +692,104 @@ export default function SpoolPage() {
       <section style={{ padding: '0 24px 140px' }}>
         <div style={{ maxWidth: 720, margin: '0 auto' }}>
           <ScrollReveal>
-            <div style={{
-              background: BG_CARD,
-              borderRadius: RADIUS_XL,
-              padding: 'clamp(32px, 6vw, 64px)',
-              textAlign: 'center',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-              position: 'relative',
-              overflow: 'hidden',
-            }}>
-              {/* Subtle accent tint at top */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: 2,
-                background: `linear-gradient(90deg, transparent, ${ACCENT}, transparent)`,
-              }} />
-
-              <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: ACCENT, marginBottom: 24 }}>
-                Bambu Lab Integration
-              </p>
-
-              <h2 style={{
-                fontSize: 'clamp(28px, 5vw, 44px)',
-                fontWeight: 700,
-                lineHeight: 1.15,
-                letterSpacing: '-0.02em',
-                marginBottom: 20,
-                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif',
-              }}>
-                Your Bambu printer.{' '}
-                <span style={{ color: ACCENT }}>Automatically synced.</span>
+            <div style={{ background: BG_CARD, borderRadius: RADIUS_XL, padding: 'clamp(32px, 6vw, 64px)', textAlign: 'center', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${ACCENT}, transparent)` }} />
+              <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: ACCENT, marginBottom: 24 }}>Bambu Lab Integration</p>
+              <h2 style={{ fontSize: 'clamp(28px, 5vw, 44px)', fontWeight: 700, lineHeight: 1.15, letterSpacing: '-0.02em', marginBottom: 20, fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif' }}>
+                Your Bambu printer.{' '}<span style={{ color: ACCENT }}>Automatically synced.</span>
               </h2>
-
-              <p style={{
-                fontSize: 17,
-                lineHeight: 1.6,
-                color: TEXT_SECONDARY,
-                maxWidth: 480,
-                margin: '0 auto 32px',
-              }}>
-                Connect to the Bambu Lab Cloud API. Auto-import your complete
-                print history — name, duration, material, and weight consumed.
+              <p style={{ fontSize: 17, lineHeight: 1.6, color: TEXT_SECONDARY, maxWidth: 480, margin: '0 auto 32px' }}>
+                Connect to the Bambu Lab Cloud API once and your entire print history imports automatically — name, duration, material, and weight consumed. No manual logging required.
               </p>
-
-              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 10 }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 10, marginBottom: 24 }}>
                 {BAMBU_PRINTERS.map((p) => (
-                  <span key={p} style={{
-                    padding: '8px 18px',
-                    borderRadius: 999,
-                    fontSize: 13,
-                    fontWeight: 500,
-                    background: 'rgba(255,255,255,0.06)',
-                    color: TEXT_PRIMARY,
-                  }}>
-                    {p}
-                  </span>
+                  <span key={p} style={{ padding: '8px 18px', borderRadius: 999, fontSize: 13, fontWeight: 500, background: 'rgba(255,255,255,0.06)', color: TEXT_PRIMARY }}>{p}</span>
                 ))}
               </div>
+              <p style={{ fontSize: 13, color: TEXT_TERTIARY, margin: 0 }}>More printers added regularly · Pro feature</p>
             </div>
           </ScrollReveal>
         </div>
       </section>
 
-      {/* ── FEATURES GRID ── */}
+      {/* ── SPOOLTAG ── */}
       <section style={{ padding: '0 24px 140px' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <ScrollReveal>
-            <div style={{ textAlign: 'center', marginBottom: 64 }}>
-              <h2 style={{
-                fontSize: 'clamp(28px, 5vw, 48px)',
-                fontWeight: 700,
-                letterSpacing: '-0.02em',
-                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif',
-              }}>
-                Everything you need.
-              </h2>
-              <p style={{ fontSize: 17, color: TEXT_TERTIARY, marginTop: 8 }}>Nothing you don't.</p>
+        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 440px), 1fr))', gap: 64, alignItems: 'center' }}>
+          {/* Card */}
+          <ScrollReveal delay={0.1}>
+            <div style={{ background: BG_CARD, borderRadius: RADIUS_XL, padding: 40, textAlign: 'center', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, transparent, #34C759, transparent)' }} />
+              <div style={{ width: 72, height: 72, borderRadius: 20, background: 'rgba(52, 199, 89, 0.1)', border: '1px solid rgba(52, 199, 89, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                <svg width={32} height={32} viewBox="0 0 24 24" fill="none">
+                  <path d="M20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20" stroke="#34C759" strokeWidth="1.5" strokeLinecap="round" />
+                  <path d="M17 12C17 9.24 14.76 7 12 7C9.24 7 7 9.24 7 12C7 14.76 9.24 17 12 17" stroke="#34C759" strokeWidth="1.5" strokeLinecap="round" />
+                  <circle cx="12" cy="12" r="2" fill="#34C759" />
+                </svg>
+              </div>
+              <h3 style={{ fontSize: 22, fontWeight: 700, marginBottom: 10, fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif' }}>SpoolTag</h3>
+              <p style={{ fontSize: 15, color: TEXT_SECONDARY, lineHeight: 1.6, maxWidth: 280, margin: '0 auto 28px' }}>
+                Hold your phone to a tag. See the filament, remaining weight, and print history — instantly.
+              </p>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
+                <div style={{ padding: '8px 18px', borderRadius: 12, background: 'rgba(52, 199, 89, 0.1)', border: '1px solid rgba(52, 199, 89, 0.25)', fontSize: 13, color: '#34C759', fontWeight: 600 }}>
+                  NFC Tag
+                </div>
+                <div style={{ padding: '8px 18px', borderRadius: 12, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', fontSize: 13, color: TEXT_PRIMARY, fontWeight: 600 }}>
+                  QR Label
+                </div>
+              </div>
             </div>
           </ScrollReveal>
 
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))',
-            gap: 16,
-          }}>
+          {/* Text */}
+          <div>
+            <ScrollReveal>
+              <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#34C759', marginBottom: 16 }}>SpoolTag</p>
+              <h2 style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 700, lineHeight: 1.15, letterSpacing: '-0.02em', marginBottom: 20, fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif' }}>
+                Your shelf. Tap to identify.
+              </h2>
+            </ScrollReveal>
+            <ScrollReveal delay={0.08}>
+              <p style={{ fontSize: 17, lineHeight: 1.6, color: TEXT_SECONDARY, marginBottom: 28 }}>
+                Print QR labels in seconds or write NFC stickers once. Tap or scan any spool to instantly pull up its full profile, weight history, and print log — without searching or scrolling.
+              </p>
+            </ScrollReveal>
+            <ScrollReveal delay={0.14}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {[
+                  'NFC tap — one-touch spool identification',
+                  'QR codes — scan with iPhone camera',
+                  'Deep links directly into the spool profile',
+                  'Share filament details with other makers',
+                ].map((label) => (
+                  <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <Check color="#34C759" />
+                    <span style={{ fontSize: 14, color: TEXT_SECONDARY }}>{label}</span>
+                  </div>
+                ))}
+              </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FEATURES GRID ── */}
+      <section id="features" style={{ padding: '0 24px 140px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <ScrollReveal>
+            <div style={{ textAlign: 'center', marginBottom: 64 }}>
+              <h2 style={{ fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 700, letterSpacing: '-0.02em', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif' }}>Everything a serious maker needs.</h2>
+              <p style={{ fontSize: 17, color: TEXT_TERTIARY, marginTop: 8 }}>Nothing they don't.</p>
+            </div>
+          </ScrollReveal>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))', gap: 16 }}>
             {FEATURES.map((f, i) => (
               <ScrollReveal key={f.title} delay={i * 0.04}>
-                <div style={{
-                  background: BG_CARD,
-                  borderRadius: RADIUS_LG,
-                  padding: 24,
-                  height: '100%',
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
-                }}>
-                  <h3 style={{ fontSize: 17, fontWeight: 600, marginBottom: 8 }}>{f.title}</h3>
+                <div style={{ background: BG_CARD, borderRadius: RADIUS_LG, padding: 24, height: '100%', boxShadow: '0 4px 16px rgba(0,0,0,0.2)', borderTop: `2px solid ${f.color}35` }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: 4, background: f.color, flexShrink: 0 }} />
+                    <h3 style={{ fontSize: 17, fontWeight: 600, margin: 0 }}>{f.title}</h3>
+                  </div>
                   <p style={{ fontSize: 14, lineHeight: 1.55, color: TEXT_SECONDARY, margin: 0 }}>{f.desc}</p>
                 </div>
               </ScrollReveal>
@@ -898,37 +800,16 @@ export default function SpoolPage() {
 
       {/* ── STATS ── */}
       <section style={{ padding: '0 24px 140px' }}>
-        <div style={{
-          maxWidth: 700,
-          margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: 24,
-        }}>
+        <div style={{ maxWidth: 800, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
           {[
-            { value: '10,000+', label: 'Filaments' },
-            { value: '0.1g',   label: 'Precision' },
-            { value: '∞',      label: 'iCloud Sync' },
+            { value: '10,000+', label: 'Filament Profiles' },
+            { value: '0.1g',    label: 'Weight Precision' },
+            { value: 'iCloud',  label: 'Sync Included' },
           ].map((s, i) => (
             <ScrollReveal key={s.label} delay={i * 0.06}>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{
-                  fontSize: 'clamp(32px, 5vw, 48px)',
-                  fontWeight: 700,
-                  fontFamily: 'ui-monospace, "SF Mono", monospace',
-                  marginBottom: 6,
-                }}>
-                  {s.value}
-                </div>
-                <div style={{
-                  fontSize: 11,
-                  fontWeight: 500,
-                  letterSpacing: '0.12em',
-                  textTransform: 'uppercase',
-                  color: TEXT_TERTIARY,
-                }}>
-                  {s.label}
-                </div>
+              <div style={{ textAlign: 'center', padding: '32px 16px', background: 'rgba(255,255,255,0.02)', borderRadius: RADIUS_LG, border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 700, fontFamily: 'ui-monospace, "SF Mono", monospace', marginBottom: 8 }}>{s.value}</div>
+                <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: TEXT_TERTIARY }}>{s.label}</div>
               </div>
             </ScrollReveal>
           ))}
@@ -940,46 +821,17 @@ export default function SpoolPage() {
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <ScrollReveal>
             <div style={{ textAlign: 'center', marginBottom: 48 }}>
-              <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: ACCENT, marginBottom: 16 }}>
-                Premium Visuals
-              </p>
-              <h2 style={{
-                fontSize: 'clamp(28px, 5vw, 48px)',
-                fontWeight: 700,
-                letterSpacing: '-0.02em',
-                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif',
-              }}>
-                Every material, rendered.
-              </h2>
-              <p style={{ fontSize: 17, color: TEXT_TERTIARY, marginTop: 8 }}>
-                Procedural shaders bring your filaments to life.
-              </p>
+              <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: ACCENT, marginBottom: 16 }}>Premium Visuals</p>
+              <h2 style={{ fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 700, letterSpacing: '-0.02em', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif' }}>Every material, rendered.</h2>
+              <p style={{ fontSize: 17, color: TEXT_TERTIARY, marginTop: 8 }}>Procedural shaders bring your filaments to life.</p>
             </div>
           </ScrollReveal>
           <ScrollReveal delay={0.1}>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              flexWrap: 'wrap',
-              gap: 32,
-            }}>
+            <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 32 }}>
               {SPOOL_SHOWCASE.map((s) => (
                 <div key={s.label} style={{ textAlign: 'center' }}>
-                  <FilamentSpool
-                    colors={s.colors}
-                    materialType={s.materialType}
-                    size={120}
-                    animated={s.animated}
-                  />
-                  <p style={{
-                    fontSize: 12,
-                    fontWeight: 500,
-                    color: TEXT_TERTIARY,
-                    marginTop: 10,
-                    letterSpacing: '0.04em',
-                  }}>
-                    {s.label}
-                  </p>
+                  <FilamentSpool colors={s.colors} materialType={s.materialType} size={120} animated={s.animated} />
+                  <p style={{ fontSize: 12, fontWeight: 500, color: TEXT_TERTIARY, marginTop: 10, letterSpacing: '0.04em' }}>{s.label}</p>
                 </div>
               ))}
             </div>
@@ -992,56 +844,104 @@ export default function SpoolPage() {
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <ScrollReveal>
             <div style={{ textAlign: 'center', marginBottom: 48 }}>
-              <h2 style={{
-                fontSize: 'clamp(28px, 5vw, 48px)',
-                fontWeight: 700,
-                letterSpacing: '-0.02em',
-                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif',
-              }}>
-                Loved by makers.
-              </h2>
+              <h2 style={{ fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 700, letterSpacing: '-0.02em', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif' }}>Loved by makers.</h2>
             </div>
           </ScrollReveal>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))',
-            gap: 16,
-          }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))', gap: 16 }}>
             {TESTIMONIALS.map((t, i) => (
               <ScrollReveal key={i} delay={i * 0.06}>
-                <div style={{
-                  background: BG_CARD,
-                  borderRadius: RADIUS_LG,
-                  padding: 28,
-                  height: '100%',
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                }}>
+                <div style={{ background: BG_CARD, borderRadius: RADIUS_LG, padding: 28, height: '100%', boxShadow: '0 4px 16px rgba(0,0,0,0.2)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
-                    <span style={{ fontSize: 32, color: ACCENT, lineHeight: 1, display: 'block', marginBottom: 12 }}>"</span>
-                    <p style={{
-                      fontSize: t.featured ? 18 : 15,
-                      fontWeight: t.featured ? 600 : 400,
-                      lineHeight: 1.55,
-                      color: t.featured ? TEXT_PRIMARY : TEXT_SECONDARY,
-                      margin: 0,
-                      fontStyle: t.featured ? 'normal' : 'normal',
-                    }}>
-                      {t.quote}
+                    <div style={{ display: 'flex', gap: 3, marginBottom: 14 }}>
+                      {Array.from({ length: t.stars }).map((_, si) => (
+                        <svg key={si} width={13} height={13} viewBox="0 0 13 13" fill="#FF9500">
+                          <path d="M6.5 0l1.64 4.36H13L9.18 7.07l1.64 4.36L6.5 8.72l-4.32 2.71L3.82 7.07 0 4.36h4.86z" />
+                        </svg>
+                      ))}
+                    </div>
+                    <p style={{ fontSize: t.featured ? 17 : 15, fontWeight: t.featured ? 500 : 400, lineHeight: 1.6, color: t.featured ? TEXT_PRIMARY : TEXT_SECONDARY, margin: 0 }}>
+                      "{t.quote}"
                     </p>
                   </div>
-                  <p style={{
-                    fontSize: 12,
-                    color: TEXT_TERTIARY,
-                    marginTop: 20,
-                    marginBottom: 0,
-                    fontWeight: 500,
-                    letterSpacing: '0.04em',
-                  }}>
-                    — {t.attribution}
+                  <p style={{ fontSize: 12, color: TEXT_TERTIARY, marginTop: 20, marginBottom: 0, fontWeight: 500, letterSpacing: '0.04em' }}>— {t.attribution}</p>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── PRICING ── */}
+      <section id="pricing" style={{ padding: '0 24px 140px' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+          <ScrollReveal>
+            <div style={{ textAlign: 'center', marginBottom: 64 }}>
+              <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: ACCENT, marginBottom: 16 }}>Pricing</p>
+              <h2 style={{ fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 700, letterSpacing: '-0.02em', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif' }}>
+                Start free. Upgrade when you're ready.
+              </h2>
+              <p style={{ fontSize: 17, color: TEXT_TERTIARY, marginTop: 12 }}>No hidden fees. No trial limits. Cancel anytime.</p>
+            </div>
+          </ScrollReveal>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 1fr))', gap: 16 }}>
+            {PLANS.map((plan, i) => (
+              <ScrollReveal key={plan.name} delay={i * 0.08}>
+                <div style={{
+                  background: plan.accent ? 'rgba(0, 122, 255, 0.05)' : BG_CARD,
+                  borderRadius: RADIUS_XL,
+                  padding: 32,
+                  border: plan.accent ? '1px solid rgba(0, 122, 255, 0.25)' : '1px solid rgba(255,255,255,0.06)',
+                  position: 'relative',
+                  boxShadow: plan.accent ? '0 8px 40px rgba(0, 122, 255, 0.12)' : '0 4px 16px rgba(0,0,0,0.2)',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}>
+                  {plan.badge && (
+                    <div style={{ position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)', padding: '4px 16px', borderRadius: 999, background: ACCENT, fontSize: 11, fontWeight: 700, color: '#fff', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>
+                      {plan.badge}
+                    </div>
+                  )}
+
+                  <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: plan.accent ? ACCENT : TEXT_TERTIARY, marginBottom: 14 }}>
+                    {plan.name}
                   </p>
+
+                  <div style={{ marginBottom: 28 }}>
+                    <span style={{ fontSize: 42, fontWeight: 700, fontFamily: 'ui-monospace, "SF Mono", monospace', letterSpacing: '-0.02em' }}>{plan.price}</span>
+                    <span style={{ fontSize: 13, color: TEXT_TERTIARY, marginLeft: 6 }}>{plan.priceSub}</span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32, flex: 1 }}>
+                    {plan.features.map((f) => (
+                      <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <Check color={plan.accent ? ACCENT : TEXT_TERTIARY} />
+                        <span style={{ fontSize: 14, color: plan.accent ? TEXT_SECONDARY : TEXT_TERTIARY }}>{f}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <a
+                    href={plan.ctaHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'block',
+                      textAlign: 'center',
+                      padding: '14px 24px',
+                      borderRadius: RADIUS_MD,
+                      background: plan.accent ? ACCENT : 'rgba(255,255,255,0.08)',
+                      color: '#fff',
+                      fontSize: 15,
+                      fontWeight: 600,
+                      textDecoration: 'none',
+                      boxShadow: plan.accent ? `0 4px 20px ${ACCENT}30` : 'none',
+                      transition: 'opacity 0.2s',
+                    }}
+                  >
+                    {plan.cta}
+                  </a>
                 </div>
               </ScrollReveal>
             ))}
@@ -1052,41 +952,22 @@ export default function SpoolPage() {
       {/* ── FINAL CTA ── */}
       <section style={{ padding: '80px 24px 140px', textAlign: 'center' }}>
         <ScrollReveal>
-          <h2 style={{
-            fontSize: 'clamp(36px, 7vw, 64px)',
-            fontWeight: 700,
-            letterSpacing: '-0.03em',
-            marginBottom: 16,
-            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif',
-          }}>
-            Start tracking.
+          <h2 style={{ fontSize: 'clamp(36px, 7vw, 64px)', fontWeight: 700, letterSpacing: '-0.03em', marginBottom: 16, fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif' }}>
+            Your collection. Under control.
           </h2>
         </ScrollReveal>
         <ScrollReveal delay={0.08}>
-          <p style={{ fontSize: 18, color: TEXT_SECONDARY, marginBottom: 12 }}>Free on the App Store.</p>
+          <p style={{ fontSize: 18, color: TEXT_SECONDARY, marginBottom: 8 }}>Free on the App Store. No account required.</p>
         </ScrollReveal>
         <ScrollReveal delay={0.1}>
-          <p style={{ fontSize: 14, color: TEXT_TERTIARY, marginBottom: 40 }}>Pro tier available for power users.</p>
+          <p style={{ fontSize: 14, color: TEXT_TERTIARY, marginBottom: 40 }}>Pro unlocks unlimited spools, Bambu sync, and SpoolTag.</p>
         </ScrollReveal>
         <ScrollReveal delay={0.15}>
           <a
             href={APP_STORE}
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 12,
-              padding: '18px 36px',
-              borderRadius: RADIUS_MD,
-              background: ACCENT,
-              color: '#fff',
-              fontSize: 17,
-              fontWeight: 600,
-              textDecoration: 'none',
-              boxShadow: `0 4px 30px ${ACCENT}40`,
-              transition: 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
-            }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: '18px 36px', borderRadius: RADIUS_MD, background: ACCENT, color: '#fff', fontSize: 17, fontWeight: 600, textDecoration: 'none', boxShadow: `0 4px 30px ${ACCENT}40`, transition: 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)' }}
           >
             <AppleLogo size={24} />
             <span>Download on the App Store</span>
@@ -1095,24 +976,9 @@ export default function SpoolPage() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer style={{
-        padding: '32px 24px',
-        borderTop: '1px solid rgba(255,255,255,0.06)',
-      }}>
-        <div style={{
-          maxWidth: 1100,
-          margin: '0 auto',
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 16,
-          fontSize: 12,
-          color: TEXT_TERTIARY,
-        }}>
-          <Link to="/" style={{ color: TEXT_TERTIARY, textDecoration: 'none' }}>
-            A Lance Studio product
-          </Link>
+      <footer style={{ padding: '32px 24px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 16, fontSize: 12, color: TEXT_TERTIARY }}>
+          <Link to="/" style={{ color: TEXT_TERTIARY, textDecoration: 'none' }}>A Lance Studio product</Link>
           <div style={{ display: 'flex', gap: 20 }}>
             <a href="/privacy.html" style={{ color: TEXT_TERTIARY, textDecoration: 'none' }}>Privacy</a>
             <a href="mailto:hello@lance-studio.com" style={{ color: TEXT_TERTIARY, textDecoration: 'none' }}>Contact</a>

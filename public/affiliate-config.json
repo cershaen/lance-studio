@@ -1,0 +1,54 @@
+{
+  "version": 4,
+  "vendors": {
+    "amazon": {
+      "enabled": true,
+      "regions": {
+        "US": "spoolapp-20",
+        "GB": "spoolapp-21",
+        "UK": "spoolapp-21",
+        "ES": "spoolapp04-21",
+        "FR": "spoolapp07-21",
+        "DE": "spoolapp0e-21",
+        "IT": "spoolapp0a4-21",
+        "CA": "spoolapp20-20",
+        "AU": "spoolapp-22"
+      }
+    },
+    "sunlu": {
+      "enabled": true,
+      "ref": "10438344.cl2t2piq4q",
+      "coupon": "CL2T2PIQ4Q"
+    },
+    "elegoo": {
+      "enabled": true,
+      "awin_code": "JKe0G2",
+      "coupon": null
+    },
+    "polymaker": {
+      "enabled": false,
+      "ref": null,
+      "coupon": null
+    },
+    "creality": {
+      "enabled": false,
+      "ref": null,
+      "coupon": null
+    },
+    "aliexpress": {
+      "enabled": false,
+      "ref": null,
+      "coupon": null
+    },
+    "bambu": {
+      "enabled": false,
+      "ref": null,
+      "coupon": null
+    },
+    "prusa": {
+      "enabled": false,
+      "ref": null,
+      "coupon": null
+    }
+  }
+}

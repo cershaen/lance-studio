@@ -13,6 +13,15 @@
             "comment": "Matches App Clip invocation prefix"
           }
         ]
+      },
+      {
+        "appIDs": [ "9Z938P5XM2.LM.Hugo" ],
+        "components": [
+          {
+            "/": "/hugo/action/*",
+            "comment": "Matches Hugo NFC tag action links"
+          }
+        ]
       }
     ]
   },

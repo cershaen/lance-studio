@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useScroll, useTransform, useSpring, AnimatePresence, useInView, animate as motionAnimate, useMotionValue } from 'motion/react';
+import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'motion/react';
 import { BarChart, Bar, XAxis, ResponsiveContainer, Cell } from 'recharts';
 import { FilamentSpool } from '../components/spool/FilamentSpool';
 
@@ -27,13 +27,6 @@ const RADIUS_XL = 24;
 const APP_STORE = 'https://apps.apple.com/gb/app/spool/id6756892049';
 
 const SPRING = { duration: 0.4, ease: [0.22, 1, 0.36, 1] };
-
-const SIMULATOR_POSTER = '/spool-captures/spool-capture-01-spools.png';
-const SIMULATOR_CAPTURES = [
-  { src: '/spool-captures/spool-capture-02-workshop.png', alt: 'Spool workshop view captured in the iOS simulator' },
-  { src: '/spool-captures/spool-capture-03-printlog.png', alt: 'Spool production log view captured in the iOS simulator' },
-  { src: '/spool-captures/spool-capture-04-settings.png', alt: 'Spool settings view captured in the iOS simulator' },
-];
 
 /* ------------------------------------------------------------------ */
 /*  Shared components                                                  */
@@ -78,64 +71,6 @@ function ScrollReveal({
       {children}
     </motion.div>
   );
-}
-
-function SimulatorCaptureShowcase() {
-  return (
-    <section id="app-preview" style={{ padding: '0 24px 128px' }}>
-      <div className="spool-simulator-showcase">
-        <div className="spool-simulator-copy">
-          <div className="spool-simulator-badge">Captured from the app</div>
-          <h2>The real Spool interface, filled with real maker scenarios.</h2>
-          <p>
-            This preview comes from a seeded iPhone simulator run: inventory, workshop, maintenance, print economics, and settings all rendered by the app itself.
-          </p>
-          <div className="spool-simulator-points">
-            <span>6 test spools</span>
-            <span>2 printers</span>
-            <span>6 production logs</span>
-            <span>Drying and AMS storage</span>
-          </div>
-        </div>
-
-        <div className="spool-simulator-media" aria-label="Spool app simulator captures">
-          <div className="spool-capture-phone">
-            <img
-              src={SIMULATOR_POSTER}
-              alt="Spool inventory dashboard captured in the iOS simulator"
-              loading="eager"
-              decoding="async"
-            />
-          </div>
-          <div className="spool-capture-thumbs">
-            {SIMULATOR_CAPTURES.map((capture) => (
-              <div className="spool-capture-thumb" key={capture.src}>
-                <img src={capture.src} alt={capture.alt} loading="lazy" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* Count-up number animation */
-function CountUp({ to, suffix = '', prefix = '', duration = 1.8 }: { to: number; suffix?: string; prefix?: string; duration?: number }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const motionVal = useMotionValue(0);
-  const isInView = useInView(ref, { once: true, margin: '-40px' });
-
-  useEffect(() => {
-    if (!isInView) return;
-    const controls = motionAnimate(motionVal, to, { duration, ease: 'easeOut' });
-    const unsubscribe = motionVal.on('change', (v) => {
-      if (ref.current) ref.current.textContent = prefix + Math.round(v).toLocaleString() + suffix;
-    });
-    return () => { controls.stop(); unsubscribe(); };
-  }, [isInView]);
-
-  return <span ref={ref}>{prefix}0{suffix}</span>;
 }
 
 /* Sharp colored spool circle — replaces blurry WebGL canvas at tiny sizes */
@@ -253,54 +188,56 @@ const BAMBU_MAINTENANCE = [
   },
 ];
 
+/* Verbatim App Store reviews (public storefront feeds, checked 2026-09-05). Capitalisation normalised only. */
 const TESTIMONIALS = [
   {
-    quote: "I thought it would just measure filament, but it does so much more. Cost per print, Bambu Cloud integration, adding prints with a single tap. It honestly feels like it was designed by Apple themselves. Keep making apps like this!",
-    attribution: 'App Store review',
+    quote: "I'm not sure how I managed to keep track of everything before. The connection with the Bambu Cloud makes it super easy to import my prints and accurately track how much filament I have left. The whole analytics with proper energy tracking is amazing too!",
+    attribution: 'App Store review, United Kingdom, February 2026',
     stars: 5,
     featured: true,
   },
   {
-    quote: 'The most feature-complete filament management app on any platform.',
-    attribution: 'Independent review',
+    quote: "The app is simply amazing. I was thinking of building something like that on my own, but then I found this existing app and I'm really happy with all of the functionalities and features provided.",
+    attribution: 'App Store review, Germany, May 2026',
     stars: 5,
     featured: false,
   },
   {
-    quote: 'Finally an app that tracks what I actually care about. Weight remaining, cost per print, energy usage. Everything in one place.',
-    attribution: 'App Store review',
+    quote: 'Such a well-designed, pretty, and versatile app.',
+    attribution: 'App Store review, United States, May 2026',
     stars: 5,
     featured: false,
   },
 ];
 
+/* Mirrors the App Store description's START FREE / GO PRO paragraphs and PremiumManager's caps. Prices live in the App Store. */
 const PLANS = [
   {
     name: 'Free',
     price: 'Free',
-    priceSub: 'forever',
+    priceSub: 'forever, no card required',
     features: [
-      'Up to 10 spools',
-      '10,000+ filament database',
+      '20 spools, 2 printers, 4 storage locations',
+      'Bambu Cloud import and SpoolTag included',
+      'Print logging and Print Story, always free',
+      '30 days of analytics',
+      'Categories and printer maintenance',
       'iCloud sync across devices',
-      'Print history logging',
-      'Cost and energy tracking',
-      'Categories and organisation',
     ],
     cta: 'Download Free',
     accent: false,
   },
   {
     name: 'Pro',
-    price: '£4.99',
-    priceSub: '/month or £49.99/year',
+    price: 'Unlimited',
+    priceSub: 'monthly or yearly, priced in the App Store',
     features: [
-      'Unlimited spools',
-      'Everything in Free',
-      'Bambu Cloud auto-sync',
-      'SpoolTag — NFC and QR labels',
-      'Advanced analytics intelligence',
-      'Multiple printer management',
+      'Unlimited spools, printers and storage',
+      'Lifetime analytics',
+      'Label Studio with thermal exports and sticker sheets',
+      'Print Queue for batch production',
+      'Widgets, Live Activities and maintenance notifications',
+      'Or a one-time Spool Pack: 10 more free slots',
     ],
     cta: 'Get Pro',
     accent: true,
@@ -667,7 +604,7 @@ export default function SpoolPage() {
 
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.32 }}
             style={{ fontSize: 'clamp(17px, 2.5vw, 21px)', color: TEXT_SECONDARY, lineHeight: 1.5, maxWidth: 500, margin: '0 auto 48px', fontWeight: 400 }}>
-            The filament manager serious makers actually use. 10,000+ profiles built-in, true cost tracking, and automatic Bambu Cloud sync.
+            Filament inventory, print history, true cost per print and printer maintenance in one app. Built-in filament database, automatic Bambu Cloud import, no account needed.
           </motion.p>
 
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
@@ -681,27 +618,25 @@ export default function SpoolPage() {
             <p style={{ fontSize: 13, color: TEXT_TERTIARY, margin: 0 }}>
               Free to download
               <span style={{ color: 'rgba(255,255,255,0.12)', margin: '0 8px' }}>·</span>
-              <span style={{ color: TEXT_SECONDARY }}>Pro from £4.99/month</span>
+              <span style={{ color: TEXT_SECONDARY }}>Pro unlocks unlimited spools</span>
             </p>
           </div>
         </div>
       </section>
-
-      <SimulatorCaptureShowcase />
 
       {/* ── STATEMENT ── */}
       <section id="statement" style={{ padding: '120px 24px 140px' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
           <ScrollReveal>
             <h2 style={{ fontSize: 'clamp(32px, 6vw, 60px)', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.02em', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif' }}>
-              10,000+ filaments.{' '}
+              Built-in filament database.{' '}
               <span style={{ color: ACCENT }}>One tap to add.</span>{' '}
               <span style={{ color: TEXT_TERTIARY }}>Zero data entry.</span>
             </h2>
           </ScrollReveal>
           <ScrollReveal delay={0.1}>
             <p style={{ marginTop: 28, fontSize: 18, lineHeight: 1.65, color: TEXT_SECONDARY, maxWidth: 600 }}>
-              The largest built-in filament database on iOS. Over 10,000 profiles from Bambu Lab, Prusament, Polymaker, eSUN, Hatchbox, Overture, and dozens more. Brand, material, colour, diameter, and print temperatures included. Just search and tap.
+              Profiles from Bambu Lab, Prusament, Polymaker, eSUN, Hatchbox, Overture, Sunlu, ELEGOO and many more brands ship inside the app. Brand, material, colour, diameter, and print temperatures included. Just search and tap.
             </p>
           </ScrollReveal>
         </div>
@@ -735,7 +670,7 @@ export default function SpoolPage() {
               <div style={{ background: BG_CARD, borderRadius: RADIUS_XL, padding: 20, boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 12, background: 'rgba(255,255,255,0.06)', marginBottom: 12, fontSize: 14, color: TEXT_TERTIARY }}>
                   <span style={{ opacity: 0.5 }}>⌕</span>
-                  Search 10,000+ filaments…
+                  Search filaments…
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                   {DATABASE_ENTRIES.map((e, i) => (
@@ -758,7 +693,7 @@ export default function SpoolPage() {
                     </motion.div>
                   ))}
                 </div>
-                <p style={{ textAlign: 'center', marginTop: 14, fontSize: 12, color: TEXT_TERTIARY }}>+ 9,995 more</p>
+                <p style={{ textAlign: 'center', marginTop: 14, fontSize: 12, color: TEXT_TERTIARY }}>and many more</p>
               </div>
             </HoverCard>
           </ScrollReveal>
@@ -818,7 +753,7 @@ export default function SpoolPage() {
                   ))}
                 </div>
 
-                <p style={{ textAlign: 'center', marginTop: 28, fontSize: 12, color: TEXT_TERTIARY }}>More printers added regularly · Cloud sync is a Pro feature</p>
+                <p style={{ textAlign: 'center', marginTop: 28, fontSize: 12, color: TEXT_TERTIARY }}>Bambu Cloud import is included in the free tier · Printers from other brands log in a couple of taps</p>
               </div>
             </HoverCard>
           </ScrollReveal>
@@ -960,9 +895,9 @@ export default function SpoolPage() {
       <section style={{ padding: '0 24px 140px' }}>
         <div style={{ maxWidth: 800, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
           {[
-            { countTo: 10000, suffix: '+', label: 'Filament Profiles', color: ACCENT },
-            { countTo: 21,    suffix: '',  label: 'Material Types',    color: '#34C759' },
-            { countTo: 100,   suffix: '%', label: 'Free to Download',  color: '#FF9500' },
+            { value: 'Free',            label: 'To download',                 color: '#FF9500' },
+            { value: 'No account',      label: 'iCloud keeps devices in sync', color: ACCENT },
+            { value: 'iPhone and iPad', label: 'One app, both devices',       color: '#34C759' },
           ].map((s, i) => (
             <motion.div key={s.label}
               initial={{ opacity: 0, scale: 0.9, filter: 'blur(10px)' }}
@@ -972,8 +907,8 @@ export default function SpoolPage() {
               whileHover={{ scale: 1.04, background: 'rgba(255,255,255,0.04)' }}
               style={{ textAlign: 'center', padding: '36px 16px', background: 'rgba(255,255,255,0.02)', borderRadius: RADIUS_LG, border: '1px solid rgba(255,255,255,0.06)', cursor: 'default' }}
             >
-              <div style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 700, fontFamily: 'ui-monospace, "SF Mono", monospace', marginBottom: 8, color: s.color }}>
-                <CountUp to={s.countTo} suffix={s.suffix} duration={1.8} />
+              <div style={{ fontSize: 'clamp(22px, 3vw, 34px)', fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 8, color: s.color, fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif' }}>
+                {s.value}
               </div>
               <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: TEXT_TERTIARY }}>{s.label}</div>
             </motion.div>
@@ -988,7 +923,7 @@ export default function SpoolPage() {
             <div style={{ textAlign: 'center', marginBottom: 56 }}>
               <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: ACCENT, marginBottom: 16 }}>Premium Visuals</p>
               <h2 style={{ fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 700, letterSpacing: '-0.02em', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif' }}>Every material, rendered.</h2>
-              <p style={{ fontSize: 17, color: TEXT_TERTIARY, marginTop: 8 }}>21 material types. Procedural shaders. Looks nothing like a list.</p>
+              <p style={{ fontSize: 17, color: TEXT_TERTIARY, marginTop: 8 }}>Every material type, procedurally shaded. Looks nothing like a list.</p>
             </div>
           </ScrollReveal>
         </div>
@@ -1130,7 +1065,7 @@ export default function SpoolPage() {
           <p style={{ fontSize: 18, color: TEXT_SECONDARY, marginBottom: 8 }}>Free on the App Store. No account required.</p>
         </ScrollReveal>
         <ScrollReveal delay={0.1}>
-          <p style={{ fontSize: 14, color: TEXT_TERTIARY, marginBottom: 40 }}>Pro unlocks unlimited spools, Bambu sync, and SpoolTag.</p>
+          <p style={{ fontSize: 14, color: TEXT_TERTIARY, marginBottom: 40 }}>Pro unlocks unlimited spools, lifetime analytics, Label Studio and the Print Queue.</p>
         </ScrollReveal>
         <ScrollReveal delay={0.15}>
           <motion.a href={APP_STORE} target="_blank" rel="noopener noreferrer"

@@ -28,6 +28,13 @@ const APP_STORE = 'https://apps.apple.com/gb/app/spool/id6756892049';
 
 const SPRING = { duration: 0.4, ease: [0.22, 1, 0.36, 1] };
 
+const SIMULATOR_POSTER = '/spool-captures/spool-capture-01-spools.png';
+const SIMULATOR_CAPTURES = [
+  { src: '/spool-captures/spool-capture-02-workshop.png', alt: 'Spool workshop view captured in the iOS simulator' },
+  { src: '/spool-captures/spool-capture-03-printlog.png', alt: 'Spool production log view captured in the iOS simulator' },
+  { src: '/spool-captures/spool-capture-04-settings.png', alt: 'Spool settings view captured in the iOS simulator' },
+];
+
 /* ------------------------------------------------------------------ */
 /*  Shared components                                                  */
 /* ------------------------------------------------------------------ */
@@ -70,6 +77,46 @@ function ScrollReveal({
     >
       {children}
     </motion.div>
+  );
+}
+
+function SimulatorCaptureShowcase() {
+  return (
+    <section id="app-preview" style={{ padding: '0 24px 128px' }}>
+      <div className="spool-simulator-showcase">
+        <div className="spool-simulator-copy">
+          <div className="spool-simulator-badge">Captured from the app</div>
+          <h2>The real Spool interface, filled with real maker scenarios.</h2>
+          <p>
+            This preview comes from a seeded iPhone simulator run: inventory, workshop, maintenance, print economics, and settings all rendered by the app itself.
+          </p>
+          <div className="spool-simulator-points">
+            <span>6 test spools</span>
+            <span>2 printers</span>
+            <span>6 production logs</span>
+            <span>Drying and AMS storage</span>
+          </div>
+        </div>
+
+        <div className="spool-simulator-media" aria-label="Spool app simulator captures">
+          <div className="spool-capture-phone">
+            <img
+              src={SIMULATOR_POSTER}
+              alt="Spool inventory dashboard captured in the iOS simulator"
+              loading="eager"
+              decoding="async"
+            />
+          </div>
+          <div className="spool-capture-thumbs">
+            {SIMULATOR_CAPTURES.map((capture) => (
+              <div className="spool-capture-thumb" key={capture.src}>
+                <img src={capture.src} alt={capture.alt} loading="lazy" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -526,16 +573,17 @@ function AnalyticsSection() {
 /*  Main page                                                          */
 /* ------------------------------------------------------------------ */
 export default function SpoolPage() {
-  const heroRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress: heroScroll } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
-  const heroOpacity = useTransform(heroScroll, [0, 0.6], [1, 0]);
-  const heroY       = useTransform(heroScroll, [0, 0.6], [0, -80]);
-
   const { scrollYProgress } = useScroll();
   const progress      = useSpring(scrollYProgress, { stiffness: 40, damping: 20 });
   const progressWidth = useTransform(progress, [0, 1], ['0%', '100%']);
 
-  useEffect(() => { document.title = 'Spool — Filament Tracker for 3D Printers'; }, []);
+  useEffect(() => {
+    document.title = 'Spool — Filament Tracker for 3D Printers';
+    const meta = document.querySelector('meta[name="description"]');
+    if (meta) {
+      meta.setAttribute('content', 'Spool tracks filament inventory, print history, cost, energy, Bambu Cloud imports, SpoolTag labels, and workshop intelligence for 3D printing.');
+    }
+  }, []);
 
   return (
     <div style={{ background: BG_PRIMARY, color: TEXT_PRIMARY, minHeight: '100vh', overflowX: 'hidden' }}>
@@ -567,11 +615,11 @@ export default function SpoolPage() {
             <span style={{ fontSize: 15, fontWeight: 600, fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif', letterSpacing: '-0.01em' }}>Spool</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-            <a href="#features" onClick={(e) => { e.preventDefault(); document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' }); }}
+            <a className="spool-nav-link" href="#features" onClick={(e) => { e.preventDefault(); document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' }); }}
               style={{ fontSize: 13, color: TEXT_SECONDARY, textDecoration: 'none' }}>Features</a>
-            <a href="#pricing" onClick={(e) => { e.preventDefault(); document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }); }}
+            <a className="spool-nav-link" href="#pricing" onClick={(e) => { e.preventDefault(); document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }); }}
               style={{ fontSize: 13, color: TEXT_SECONDARY, textDecoration: 'none' }}>Pricing</a>
-            <motion.a href={APP_STORE} target="_blank" rel="noopener noreferrer"
+            <motion.a className="spool-nav-cta" href={APP_STORE} target="_blank" rel="noopener noreferrer"
               whileHover={{ opacity: 0.85, scale: 1.03 }} whileTap={{ scale: 0.97 }}
               style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', borderRadius: 999, background: ACCENT, color: '#fff', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
               <AppleLogo size={14} />
@@ -583,7 +631,7 @@ export default function SpoolPage() {
       </nav>
 
       {/* ── HERO ── */}
-      <motion.section ref={heroRef} style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '80px 24px 40px', opacity: heroOpacity, y: heroY }}>
+      <section style={{ minHeight: '88svh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '80px 24px 32px' }}>
         <div style={{ maxWidth: 680, textAlign: 'center' }}>
 
           {/* iOS 26 badge with pulsing dot */}
@@ -622,8 +670,7 @@ export default function SpoolPage() {
             The filament manager serious makers actually use. 10,000+ profiles built-in, true cost tracking, and automatic Bambu Cloud sync.
           </motion.p>
 
-          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.45 }}
-            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
             <motion.a href={APP_STORE} target="_blank" rel="noopener noreferrer"
               whileHover={{ scale: 1.03, boxShadow: `0 8px 40px ${ACCENT}55` }}
               whileTap={{ scale: 0.97 }}
@@ -636,14 +683,11 @@ export default function SpoolPage() {
               <span style={{ color: 'rgba(255,255,255,0.12)', margin: '0 8px' }}>·</span>
               <span style={{ color: TEXT_SECONDARY }}>Pro from £4.99/month</span>
             </p>
-            <motion.button onClick={() => document.getElementById('statement')?.scrollIntoView({ behavior: 'smooth' })}
-              whileHover={{ opacity: 0.7 }}
-              style={{ background: 'none', border: 'none', color: TEXT_TERTIARY, fontSize: 14, cursor: 'pointer', padding: '8px 16px', fontFamily: 'inherit', marginTop: 4 }}>
-              Scroll to explore ↓
-            </motion.button>
-          </motion.div>
+          </div>
         </div>
-      </motion.section>
+      </section>
+
+      <SimulatorCaptureShowcase />
 
       {/* ── STATEMENT ── */}
       <section id="statement" style={{ padding: '120px 24px 140px' }}>
@@ -917,8 +961,8 @@ export default function SpoolPage() {
         <div style={{ maxWidth: 800, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
           {[
             { countTo: 10000, suffix: '+', label: 'Filament Profiles', color: ACCENT },
-            { countTo: 218,   suffix: '',  label: 'Prints Logged',     color: '#34C759' },
-            { countTo: 4,     suffix: '',  label: 'Printers Supported', color: '#FF9500' },
+            { countTo: 21,    suffix: '',  label: 'Material Types',    color: '#34C759' },
+            { countTo: 100,   suffix: '%', label: 'Free to Download',  color: '#FF9500' },
           ].map((s, i) => (
             <motion.div key={s.label}
               initial={{ opacity: 0, scale: 0.9, filter: 'blur(10px)' }}
